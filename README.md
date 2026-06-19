@@ -121,6 +121,7 @@ A minimal LPS manifest contains:
 ```json
 {
   "lps_version": "0.1",
+  "text_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "content_segments": [
     {
       "segment_id": "s001",
@@ -179,6 +180,15 @@ Existing codes never change after publication.
 New codes may only be added in future versions.
 A manifest produced under v0.1 must remain readable by any
 future verification tool that supports v0.1.
+
+#### text_hash field
+SHA-256 fingerprint of the visible text computed before embedding.
+The verification tool hashes the clean extracted text and compares
+it against this value. If they do not match, the visible text was
+modified after signing and verification returns failed.
+Format: 64-character lowercase hex string.
+Computed by: manifestGenerator.mjs at manifest creation time.
+Checked by: verificationTool.mjs at verification time.
 
 ### 3.3 The Token Extension
 
