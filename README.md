@@ -155,6 +155,31 @@ A minimal LPS manifest contains:
 ```
 Confidence values are probabilistic estimates, not legal determinations. Their interpretation in evidentiary contexts follows the same framework as DNA match probability or forensic image analysis — a probability contribution to a larger picture, not a standalone verdict.
 
+### Compression rules — v0.1
+
+All manifests are compressed before embedding using the shortcode
+dictionary defined in SPEC.md section 4.1. The verification tool
+must expand shortcodes using the same dictionary before reading
+any field.
+
+#### Default field assumption
+Fields `lv` (lps_version) and `st` (signing_tool) are omitted
+at embed time in v0.1. The verification tool assumes lps-v0.1
+defaults if these fields are absent. If non-default values are
+present they override the assumption.
+
+#### Confidence encoding
+Confidence values are stored as integers 0-100, not floats 0.0-1.0.
+Example: confidence of 0.95 is stored as 95.
+The verification tool divides by 100 on extraction for display.
+
+#### Immutability rule
+The shortcode dictionary is versioned and immutable.
+Existing codes never change after publication.
+New codes may only be added in future versions.
+A manifest produced under v0.1 must remain readable by any
+future verification tool that supports v0.1.
+
 ### 3.3 The Token Extension
 
 In addition to local embedding, LPS supports a token-based architecture where the embedded manifest contains a pointer to a server-side record:
