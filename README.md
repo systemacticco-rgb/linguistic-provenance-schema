@@ -278,6 +278,161 @@ Each layer adds a flag. More flags stripped means more deliberate effort to remo
 
 This shift is where the legal leverage of LPS lives. LPS does not make legal conclusions. It produces structured evidence that enables a forensic investigator to apply established anti-forensic behavior principles to digital content provenance for the first time at a granular, section-level resolution.
 
+### 3.6 Server-Side Notarization Registry
+
+The embedded LPS manifest survives copy-paste but not
+screenshot, OCR, or analog conversion. When the embedded
+signal is stripped, the manifest is gone. The verification
+tool returns degraded — signal absent.
+
+The notarization registry is the layer that survives all
+of those scenarios.
+
+**How it works**
+
+At the moment AI content is generated, the generating
+tool computes a SHA-256 fingerprint of the content and
+writes it to an append-only server-side log. The log
+records two things only: the fingerprint and the timestamp.
+The content itself is never stored. The registry knows
+that this exact content existed at this exact moment.
+Nothing more.
+
+The registry issues a unique token for each record —
+a cryptographically random identifier that gets embedded
+in the document alongside the LPS manifest. The token is
+the key to the registry record.
+
+**How verification works**
+
+If the embedded signal survived: the verification tool
+extracts the token, queries the registry, and receives
+the stored fingerprint and timestamp. It hashes the
+received document and compares. If they match, the
+document is confirmed as existing at that timestamp
+unchanged.
+
+If the embedded signal was stripped: the verification
+tool hashes the received document and queries the registry
+by content hash. If a record exists, origin is confirmed
+even without any embedded signal. A document that was
+screenshotted, OCR'd, or retyped letter by letter — if
+the resulting text matches the registry record — is
+confirmed.
+
+**What it cannot confirm**
+
+The registry confirms existence and time. It does not
+confirm authorship, origin type, or contribution proportion.
+That is what the embedded LPS manifest provides. The two
+layers are complementary. Neither is sufficient alone.
+
+**Why it requires AI provider cooperation**
+
+The record must be written at generation time by the
+generating system. A third party can hash a document and
+submit it to a registry — but that only proves the third
+party had the document at that moment, not when the AI
+generated it. The forensic value depends on the record
+existing before the content leaves the generating system.
+
+Adoption requires either regulatory mandate — EU AI Act
+Article 50 creates the demand — or voluntary commitment
+from AI providers. The LPS reference implementation
+demonstrates the architecture. The working group
+submission proposes the standard. Provider adoption
+is the third step.
+
+**Architecture status**
+
+Defined. Not built in v0.1 reference implementation.
+Required before working group submission.
+Full architecture: PROPOSALS.md PROPOSAL 001.
+Open questions: registry hosting, record retention,
+token revocation, cross-registry legal access.
+
+### 3.7 Token Binding and Bypass Countermeasures
+
+The embedded LPS manifest survives copy-paste. It does not
+survive screenshot. A user who photographs their screen and
+runs OCR on the result receives clean text with no invisible
+characters. Every embedded signal is gone. No cryptographic
+mechanism can prevent this at the content level.
+
+PROPOSAL 002 addresses this through three independent layers.
+
+**Layer 1 — Screenshot blocking on native apps**
+
+Native mobile implementations of LPS-compliant AI tools
+render generated content in a hardware-backed protected
+display surface. On iOS and Android, this surface cannot
+be captured by the system screenshot mechanism. Screenshot
+returns black. The only way to extract the generated text
+is through the app's own export mechanism — which re-embeds
+the LPS signal on every copy or export operation.
+
+This applies to native apps only. Web browsers do not have
+access to protected display surfaces. The casual screenshot
+bypass is closed. A second physical device photographing
+the screen remains an irreducible residual risk.
+
+**Layer 2 — Server-side token binding**
+
+At generation time, the AI tool registers the content with
+the LPS registry. The registry binds three things to a
+unique cryptographically random token: the content hash,
+the generating identity — which AI tool, which account —
+and the creation timestamp.
+
+The token is embedded in the document alongside the LPS
+manifest. When the signal is stripped — screenshot, OCR,
+manual removal — the token is gone from the document.
+The server-side binding is not. The registry record exists
+permanently and independently of what happens to the document.
+
+When the content is later hashed by any party — a court,
+a regulator, a journalist — the hash matches the registry
+record. The generating identity is in that record. The
+stripping accomplished nothing forensically. The bypass
+succeeded technically and failed forensically.
+
+This is the direct equivalent of the Chilean transit QR
+system: the QR was screenshotted, the visual was bypassed,
+but the server-side record still attributed the usage to
+the correct account because the binding was server-side,
+not in the visual representation.
+
+**Layer 3 — Usage tracking**
+
+Every verification query against the registry is logged
+as a usage event alongside the generation record. The
+complete forensic timeline becomes: when the content was
+generated, by whom, and every time it was submitted for
+verification — and when it was not.
+
+The absence of voluntary verification events between
+generation and a mandatory checkpoint — a court submission,
+a regulatory filing — is itself a forensic signal. The
+content was held and used without verification for a
+documented period. That gap contributes to the forensic
+picture without being conclusive alone.
+
+**The law as the mandatory checkpoint**
+
+The technology cannot force verification. The law can.
+Court submission, regulatory filing, publication under
+disclosure requirements — these are the mandatory
+checkpoints. LPS is what the checkpoint checks.
+The registry is what the checkpoint records.
+EU AI Act Article 50 creates the demand.
+PROPOSAL 002 defines the architecture that fulfils it.
+
+**Architecture status**
+
+Defined. Not built in v0.1 reference implementation.
+Shares infrastructure with PROPOSAL 001 — same registry,
+additional identity binding and usage event logging.
+Full architecture: PROPOSALS.md PROPOSAL 002.
 ---
 
 ## 4. Limitations
