@@ -257,6 +257,19 @@ Simple manifests (2-3 segments) fit within this ceiling after
 compression. Complex manifests (4+ segments) use the fallback
 embedding method defined in SPEC.md section 4.
 
+**Two embedding methods**
+Method A.8 (Unstructured) — appends manifest as one invisible
+block after the visible text. Used when compressed manifest is
+under 220 bytes. Hard ceiling: 256 bytes.
+
+Method A.9 (Structured) — distributes invisible markers
+throughout the document. Used when compressed manifest exceeds
+220 bytes. No hard ceiling — capacity scales with document
+length. Handles multi-segment and multi-round provenance.
+
+The verification tool detects which method was used automatically.
+No flag is required in the manifest.
+
 ### 3.5 The Anti-Forensic Principle
 
 A file that arrives with all provenance signals stripped is not just unverifiable — the pattern of stripping is itself a signal.
