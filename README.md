@@ -228,6 +228,35 @@ LPS is most valuable as one layer in a multi-signal system:
 
 No single layer is sufficient. The value emerges from triangulation. Partial signals from multiple layers produce a confidence picture more useful and more honest than any binary verdict.
 
+### 3.4 Compression and Delivery Architecture
+
+Manifests are compressed before embedding using two layers:
+
+**Layer 1 — Shortcode dictionary**
+All field names and origin values are replaced with short codes
+defined in SPEC.md section 4.1. `content_segments` becomes `cs`.
+`ai_generated` becomes `aig`. The verification tool expands codes
+on extraction. Dictionary is versioned and immutable.
+
+**Layer 2 — CBOR binary encoding**
+The shortcoded manifest is encoded as CBOR binary before embedding.
+CBOR eliminates JSON structural overhead — no quotes, colons, or
+brackets. Numbers stored as binary. Estimated saving: 50-70% over
+raw JSON after shortcodes applied.
+
+**Certificate delivery**
+The signing certificate is not embedded in the manifest. It is
+hosted at a stable public URL. The manifest carries `cert_url`
+pointing to the certificate and `cert_fingerprint` — a SHA-256
+hash of the certificate — so the verification tool can confirm
+the fetched certificate is authentic before using it.
+
+**Capacity constraint**
+Unicode variation selectors support a maximum of 256 bytes.
+Simple manifests (2-3 segments) fit within this ceiling after
+compression. Complex manifests (4+ segments) use the fallback
+embedding method defined in SPEC.md section 4.
+
 ### 3.5 The Anti-Forensic Principle
 
 A file that arrives with all provenance signals stripped is not just unverifiable — the pattern of stripping is itself a signal.
