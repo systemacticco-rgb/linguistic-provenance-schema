@@ -345,9 +345,14 @@ is the third step.
 
 **Architecture status**
 
-Defined. Not built in v0.1 reference implementation.
-Required before working group submission.
-Full architecture: PROPOSALS.md PROPOSAL 001.
+Stub implemented — June 21 2026.
+Two Supabase tables: registry_records and usage_events.
+registerContent() writes content hash, generating identity,
+and timestamp at generation time. queryRegistry() retrieves
+by token or content hash fallback.
+verificationTool.mjs registry_required state triggers
+queryRegistry() when no embedded signal is found.
+Full production architecture: PROPOSALS.md PROPOSAL 001.
 Open questions: registry hosting, record retention,
 token revocation, cross-registry legal access.
 
@@ -429,10 +434,13 @@ PROPOSAL 002 defines the architecture that fulfils it.
 
 **Architecture status**
 
-Defined. Not built in v0.1 reference implementation.
-Shares infrastructure with PROPOSAL 001 — same registry,
-additional identity binding and usage event logging.
-Full architecture: PROPOSALS.md PROPOSAL 002.
+Stub implemented — June 21 2026.
+Usage event logging functional — every queryRegistry() call
+writes a usage_events record with token, queried_by,
+query_type, and timestamp. Token path and content hash
+fallback path both logged independently.
+Full production architecture including identity binding
+and credentialed access: PROPOSALS.md PROPOSAL 002.
 ---
 
 ## 4. Limitations
