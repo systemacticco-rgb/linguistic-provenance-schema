@@ -1,7 +1,7 @@
 # Linguistic Provenance Schema (LPS)
 ### An AI C2PA Contribution Standard
 
-**Status:** Work in Progress — v0.1  
+**Status:** v0.1 — reference implementation built, four-stage pipeline passing tests; PROPOSAL 005 (redundant embedding) specified, build in progress
 **Author:** Brayan Daniel Rodriguez Lugo  
 **Date:** June 2026
 
@@ -153,6 +153,10 @@ A minimal LPS manifest contains:
   "signing_tool": "lps-reference-implementation-v0.1",
   "signed_at": "2026-06-07T00:00:00Z"
 }
+*Note: this example illustrates the manifest structure only. It
+does not include the `signature`, `cert_url`, or `cert_fingerprint`
+fields added by the signing layer — see Section 6 for the full
+signed-manifest shape and current signature encoding status.*
 ```
 Confidence values are probabilistic estimates, not legal determinations. Their interpretation in evidentiary contexts follows the same framework as DNA match probability or forensic image analysis — a probability contribution to a larger picture, not a standalone verdict.
 
@@ -173,6 +177,20 @@ present they override the assumption.
 Confidence values are stored as integers 0-100, not floats 0.0-1.0.
 Example: confidence of 0.95 is stored as 95.
 The verification tool divides by 100 on extraction for display.
+
+#### Algorithm field value convention
+The `algorithm` field carries the string value `es256`, 
+derived from the JOSE algorithm identifier ES256, represented 
+internally as thelowercase string es256. This identifies the 
+underlying signaturealgorithm used by the LPS implementation 
+— ECDSA P-256, SHA-256, IEEE P1363 raw r‖s
+signature encoding — and is an LPS-internal naming convention,
+not a COSE integer algorithm identifier (COSE registers ES256 as
+integer -7). The manifest is not currently packaged as a COSE or
+JOSE structure (no COSE_Sign1 or compact JWS envelope). 
+If LPS adopts a standard COSE_Sign1 envelope in a future version,
+the algorithm field may be replaced by the standard COSE algorithm
+identifier rather than the current internal convention
 
 #### Immutability rule
 The shortcode dictionary is versioned and immutable.
@@ -509,7 +527,11 @@ LPS should be developed as an open specification through a working group that in
 
 ### 6.2 Reference Implementation
 
-A reference implementation of LPS manifest generation and verification will be developed in JavaScript/TypeScript using `c2pa-node` and `c2pa-text` as the underlying infrastructure.
+A reference implementation of LPS manifest generation and verification has been developed in JavaScript/TypeScript, using Node.js built-in `crypto` for signing/verification and `c2pa-text` for text embedding. All four pipeline components — manifest generation, signing, embedding, verification — are built and passing their original test suite as of June 2026.
+
+Signatures use the ES256 primitive (ECDSA P-256, SHA-256, IEEE P1363 raw r‖s encoding). This encoding was confirmed interoperable via an independent cross-check instead of "confirmed spec-complian against the panva/jose library — an unrelated, zero-dependency JOSE implementation — on June 30 2026. This confirms the underlying signature primitive is genuinely interoperable, not merely self-consistent within this codebase. The manifest itself is not currently wrapped in a COSE_Sign1 or compact JWS envelope; full envelope-level interoperability is a future-version target, not current state.
+
+A redundant embedding architecture (PROPOSAL 005) — anchor manifests at paragraph boundaries, overlapping full-manifest copies with cross-copy reconstruction — is fully specified and scheduled for implementation ahead of working group submission.
 
 ### 6.3 C2PA Working Group Submission
 
