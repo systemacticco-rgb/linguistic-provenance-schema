@@ -3,7 +3,7 @@
 
 **Status:** v0.1 — reference implementation built and locally tested; core signing, embedding, verification, and registry stub are implemented; PROPOSAL 005 is specified and under development. This document distinguishes implemented behavior, specified architecture, and future work.
 **Author:** Brayan Daniel Rodriguez Lugo  
-**Date:** June 2026
+**Date:** July 2026
 
 ---
 
@@ -246,7 +246,7 @@ LPS is most valuable as one layer in a multi-signal system:
 
 No single layer is sufficient. The value emerges from triangulation. Partial signals from multiple layers produce a confidence picture more useful and more honest than any binary verdict.
 
-### 3.4 Compression and Delivery Architecture
+### 3.5 Compression and Delivery Architecture
 
 Manifests are compressed before embedding using two layers:
 
@@ -288,12 +288,12 @@ length. Handles multi-segment and multi-round provenance.
 The verification tool detects which method was used automatically.
 No flag is required in the manifest.
 
-### 3.5 The Anti-Forensic Observation
+### 3.6 The Anti-Forensic Observation
 If an embedded provenance signal is absent, corrupted, or stripped, that absence is itself a relevant observation. LPS does not conclude intent from absence alone. It reports the degraded state, the missing signal, and any corroborating registry or signature evidence that remains available.
 
 The forensic value of LPS is not that it declares tampering automatically. The value is that it preserves structured evidence about which provenance signals survived, which failed, and what that pattern implies when interpreted by a qualified reviewer.
 
-### 3.6 Server-Side Notarization Registry
+### 3.7 Server-Side Notarization Registry
 
 The embedded LPS manifest survives some text-preserving transformations such as copy-paste, but not all transformations. Screenshots, OCR, retyping, and analog conversion may remove or destroy the embedded signal. When that happens, the verification tool can fall back to registry evidence if a matching record exists.
 
@@ -368,7 +368,7 @@ Full production architecture: PROPOSALS.md PROPOSAL 001.
 Open questions: registry hosting, record retention,
 token revocation, cross-registry legal access.
 
-### 3.7 Token Binding and Bypass Countermeasures
+### 3.8 Token Binding and Bypass Countermeasures
 
 The embedded LPS manifest survives copy-paste. It does not
 survive screenshot. A user who photographs their screen and
@@ -480,6 +480,18 @@ Unicode variation selectors have limited capacity for embedded data. Complex LPS
 
 Sophisticated adversaries with knowledge of the encoding scheme may be able to detect and strip LPS signals. Defense is the layered approach — stripping one layer leaves others intact and the act of stripping is itself detectable.
 
+### 4.5 Trust List Not Yet Implemented
+
+The trust list described as reused C2PA infrastructure is architecturally specified but not implemented in the v0.1 reference implementation. The registry stub currently uses a single Supabase service-role credential as its write-access boundary — a placeholder, not a trust list. Signature verification in v0.1 checks the certificate fingerprint against the manifest, not against a trust list of authorized signers.
+
+### 4.6 Registry Access Model Undefined
+
+The registry's intended access model (public read vs. credentialed-only) is not yet settled between this repository's design documents — see PROPOSALS.md PROPOSAL 001 for the open tiered-access question. Treat any statement about registry access as provisional until the working group resolves registry hosting and access architecture.
+
+### 4.7 Certificate Revocation Checking Not Implemented
+
+Certificate revocation checking is part of the intended production verification architecture but is not implemented in the current reference implementation. verificationTool.mjs fetches the certificate, confirms its fingerprint matches the manifest, and verifies the signature — it does not check whether the certificate has been revoked. This is a known gap relative to the C2PA weaknesses (Golaszewski et al., §2.1) that motivate LPS's design.
+
 ---
 
 ## 5. Legal and Institutional Use Cases
@@ -504,7 +516,7 @@ News organizations verifying content from external sources need to know not just
 ### 5.3 Compliance
 
 The EU AI Act (Article 50) requires disclosure when content is AI-generated. LPS provides the technical infrastructure for that disclosure to be persistent, verifiable, and granular rather than a voluntary label that can be removed.
-The EU's second draft Code of Practice on AI content labelling, published in early 2026, mandates multilayered disclosure including metadata, watermarking, and visible indicators — with obligations taking effect August 2026. LPS is positioned as the contribution-tracking layer that fulfills the metadata requirement at a granularity the existing standards do not provide.
+The EU Commission published the final Code of Practice on Transparency of AI-Generated Content on 10 June 2026, a voluntary framework — compliance with it is not itself mandatory, but it is expected to serve as the practical benchmark regulators use to assess compliance with the binding obligations in Article 50. The Code sets out a multilayered approach including machine-readable marking, watermarking, and visible indicators. Article 50's obligations become enforceable on 2 August 2026, with a transitional period until 2 December 2026 for systems already on the market before that date. LPS is positioned as a contribution-tracking layer that can support the metadata/marking requirement at a granularity existing standards do not provide.
 
 ---
 
@@ -523,9 +535,9 @@ LPS should be developed as an open specification through a working group that in
 
 A reference implementation of LPS manifest generation and verification has been developed in JavaScript/TypeScript, using Node.js built-in `crypto` for signing/verification and `c2pa-text` for text embedding. All four pipeline components — manifest generation, signing, embedding, verification — are built and passing their original test suite as of June 2026.
 
-Signatures use the ES256 primitive (ECDSA P-256, SHA-256, IEEE P1363 raw r‖s encoding). This has been cross-checked against an independent JOSE implementation to confirm interoperability of the signature primitive. The manifest itself is not currently wrapped in a COSE_Sign1 or compact JWS envelope; envelope-level interoperability remains future work. The manifest itself is not currently wrapped in a COSE_Sign1 or compact JWS envelope; full envelope-level interoperability is a future-version target, not current state.
+Signatures use the ES256 primitive (ECDSA P-256, SHA-256, IEEE P1363 raw r‖s encoding), cross-checked against the independent panva/jose library to confirm interoperability at the primitive level — not a claim that the manifest itself is JOSE/COSE-compatible as a structure. The manifest is not currently wrapped in a COSE_Sign1 or compact JWS envelope; full envelope-level interoperability is a future-version target, not current state.
 
-A redundant embedding architecture (PROPOSAL 005) — anchor manifests at paragraph boundaries, use overlapping full-manifest copies, and support cross-copy reconstruction — is specified and intended for implementation before working group submission.
+A redundant embedding architecture (PROPOSAL 005) — anchor manifests at paragraph boundaries, overlapping full-manifest copies, and cross-copy reconstruction — is specified but not implemented in v0.1. It is scheduled for v0.2 and will be built ahead of submission only if its remaining architectural decisions (key hierarchy, HMAC parameters) resolve cleanly; otherwise it will be submitted as a clearly-scoped, honestly-described v0.2 proposal.
 
 ### 6.3 C2PA Working Group Submission
 
@@ -544,14 +556,6 @@ This proposal will be submitted to the C2PA working group as a formal extension 
 7. FBI Voice Cloning Family Scam Guidance, 2024
 8. EU AI Act Article 50 — Synthetic Content Disclosure Requirements
 9. Golaszewski, E. et al. "Verifying Provenance of Digital Media: Why the C2PA Specifications Fall Short." UMBC/NSA, April 2026. https://arxiv.org/html/2604.24890v1
-
----
-
-## 8. About This Proposal
-
-This proposal originated from independent research conducted while building a web application for a fitness coaching client. The connection between practical content authenticity problems and the gap in existing provenance standards was identified through direct engagement with the C2PA specification, the HaLLMark research, and the emerging dual-layer model announced by Google and OpenAI in May 2026.
-
-This is a living document. Sections will be updated as research deepens and feedback is received. Contributions, corrections, and challenges are welcome.
 
 ---
 ## About
