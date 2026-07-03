@@ -560,5 +560,12 @@ This proposal originated from independent research conducted while building a we
 This is a living document. Sections will be updated as research deepens and feedback is received. Contributions, corrections, and challenges are welcome.
 
 ---
+## About
 
-*v0.1 — Work in Progress — June 2026*
+LPS is a research-driven system built to explore provenance tracking, cryptographic integrity, and adversarial resilience in AI-assisted text systems.
+
+The project is developed independently with a focus on security engineering, system design, and verifiable structure rather than rapid feature shipping or surface-level tooling.
+
+The goal is to evolve LPS into a robust reference implementation that can be reviewed, tested, and extended by security and AI infrastructure communities.
+
+*v0.1 — Work in Progress — July 2026*
