@@ -1,7 +1,7 @@
 # Linguistic Provenance Schema (LPS)
 ### An AI C2PA Contribution Standard
 
-**Status:** v0.1 — reference implementation built, four-stage pipeline passing tests; PROPOSAL 005 (redundant embedding) specified, build in progress
+**Status:** v0.1 — reference implementation built and locally tested; core signing, embedding, verification, and registry stub are implemented; PROPOSAL 005 is specified and under development. This document distinguishes implemented behavior, specified architecture, and future work.
 **Author:** Brayan Daniel Rodriguez Lugo  
 **Date:** June 2026
 
@@ -9,9 +9,9 @@
 
 ## Abstract
 
-Current content provenance systems treat AI involvement as binary — present or absent. They do not record the degree, nature, or proportion of AI contribution to a piece of content. This proposal defines the Linguistic Provenance Schema (LPS), a standardized manifest schema designed to be embedded using existing C2PA infrastructure and layered with SynthID and linguistic steganography signals, that records what percentage of content was human-originated, what was AI-generated, and what was AI-modified human content — at the section level, not just the file level.
+Current content provenance systems typically record whether AI was involved, but not the degree, nature, or proportion of that contribution. This proposal defines the Linguistic Provenance Schema (LPS), a manifest schema designed to travel through existing C2PA-style infrastructure and complementary watermarking channels while recording section-level provenance for human-originated text, AI-generated text, and AI-modified human text.
 
-LPS does not replace C2PA or SynthID. It fills the gap neither addresses: persistent, granular contribution provenance that travels with the content after export, after distribution, and after the writing tool is closed.
+LPS does not replace C2PA or SynthID. It defines a contribution-tracking layer that can be embedded and verified alongside existing provenance signals.
 
 ---
 
@@ -21,7 +21,7 @@ LPS does not replace C2PA or SynthID. It fills the gap neither addresses: persis
 
 The HaLLMark Effect (Hoque et al., CHI 2024) demonstrated that AI contribution to writing can be tracked during the writing process — distinguishing AI-written text from AI-influenced text in real time. The authors explicitly acknowledged the limitation of their system:
 
-> *"Provenance is legible during writing but not persistent in the final document: once accepted, AI-originated text is visually indistinguishable from human-written text. Persistent provenance mechanisms are therefore design implications for future tools rather than features we implemented."*
+> *"Provenance is legible during writing but not persistent in the final document: once accepted, AI-originated text is visually indistinguishable from human-written text. Persistent provenance mechanisms are therefore a design implication for future tools rather than a feature of the HaLLMark system itself."*
 
 This proposal addresses that future work directly.
 
@@ -158,7 +158,7 @@ does not include the `signature`, `cert_url`, or `cert_fingerprint`
 fields added by the signing layer — see Section 6 for the full
 signed-manifest shape and current signature encoding status.*
 ```
-Confidence values are probabilistic estimates, not legal determinations. Their interpretation in evidentiary contexts follows the same framework as DNA match probability or forensic image analysis — a probability contribution to a larger picture, not a standalone verdict.
+Confidence values are probabilistic estimates, not legal determinations. They are implementation outputs used to support later interpretation, not standalone verdicts. Any evidentiary use depends on jurisdiction, expert review, and the broader context of the record.
 
 ### Compression rules — v0.1
 
@@ -223,7 +223,7 @@ In addition to local embedding, LPS supports a token-based architecture where th
   }
 }
 ```
-Note: the server domain shown above is a placeholder. The hosting architecture — whether a foundation-funded neutral host or a federated model with multiple compatible nodes — is an open design question to be resolved during the working group phase.
+Note: the server domain shown above is a placeholder. The hosting architecture remains an open design question for the working group phase, including whether the registry is foundation-hosted, federated, or distributed across multiple compatible nodes.
 
 The server holds the complete manifest record. The local embedding holds a summary and pointer. This hybrid approach provides resilience — local summary survives when server is unavailable, full record is available when it is.
 
@@ -288,23 +288,16 @@ length. Handles multi-segment and multi-round provenance.
 The verification tool detects which method was used automatically.
 No flag is required in the manifest.
 
-### 3.5 The Anti-Forensic Principle
+### 3.5 The Anti-Forensic Observation
+If an embedded provenance signal is absent, corrupted, or stripped, that absence is itself a relevant observation. LPS does not conclude intent from absence alone. It reports the degraded state, the missing signal, and any corroborating registry or signature evidence that remains available.
 
-A file that arrives with all provenance signals stripped is not just unverifiable — the pattern of stripping is itself a signal.
-
-Each layer adds a flag. More flags stripped means more deliberate effort to remove the content's origin history. The question shifts from *"is this authentic"* to *"why was so much effort made to make this unverifiable."*
-
-This shift is where the legal leverage of LPS lives. LPS does not make legal conclusions. It produces structured evidence that enables a forensic investigator to apply established anti-forensic behavior principles to digital content provenance for the first time at a granular, section-level resolution.
+The forensic value of LPS is not that it declares tampering automatically. The value is that it preserves structured evidence about which provenance signals survived, which failed, and what that pattern implies when interpreted by a qualified reviewer.
 
 ### 3.6 Server-Side Notarization Registry
 
-The embedded LPS manifest survives copy-paste but not
-screenshot, OCR, or analog conversion. When the embedded
-signal is stripped, the manifest is gone. The verification
-tool returns degraded — signal absent.
+The embedded LPS manifest survives some text-preserving transformations such as copy-paste, but not all transformations. Screenshots, OCR, retyping, and analog conversion may remove or destroy the embedded signal. When that happens, the verification tool can fall back to registry evidence if a matching record exists.
 
-The notarization registry is the layer that survives all
-of those scenarios.
+The registry is an auxiliary evidence layer, not a substitute for the embedded manifest or cryptographic verification.
 
 **How it works**
 
@@ -340,10 +333,11 @@ confirmed.
 
 **What it cannot confirm**
 
-The registry confirms existence and time. It does not
-confirm authorship, origin type, or contribution proportion.
-That is what the embedded LPS manifest provides. The two
-layers are complementary. Neither is sufficient alone.
+The registry confirms that a registered content hash existed at a 
+recorded time. It does not by itself confirm authorship, origin type,
+or contribution proportion.” That is what the embedded LPS
+manifest provides. The two layers are complementary. 
+Neither is sufficient alone.
 
 **Why it requires AI provider cooperation**
 
@@ -529,9 +523,9 @@ LPS should be developed as an open specification through a working group that in
 
 A reference implementation of LPS manifest generation and verification has been developed in JavaScript/TypeScript, using Node.js built-in `crypto` for signing/verification and `c2pa-text` for text embedding. All four pipeline components — manifest generation, signing, embedding, verification — are built and passing their original test suite as of June 2026.
 
-Signatures use the ES256 primitive (ECDSA P-256, SHA-256, IEEE P1363 raw r‖s encoding). This encoding was confirmed interoperable via an independent cross-check instead of "confirmed spec-complian against the panva/jose library — an unrelated, zero-dependency JOSE implementation — on June 30 2026. This confirms the underlying signature primitive is genuinely interoperable, not merely self-consistent within this codebase. The manifest itself is not currently wrapped in a COSE_Sign1 or compact JWS envelope; full envelope-level interoperability is a future-version target, not current state.
+Signatures use the ES256 primitive (ECDSA P-256, SHA-256, IEEE P1363 raw r‖s encoding). This has been cross-checked against an independent JOSE implementation to confirm interoperability of the signature primitive. The manifest itself is not currently wrapped in a COSE_Sign1 or compact JWS envelope; envelope-level interoperability remains future work. The manifest itself is not currently wrapped in a COSE_Sign1 or compact JWS envelope; full envelope-level interoperability is a future-version target, not current state.
 
-A redundant embedding architecture (PROPOSAL 005) — anchor manifests at paragraph boundaries, overlapping full-manifest copies with cross-copy reconstruction — is fully specified and scheduled for implementation ahead of working group submission.
+A redundant embedding architecture (PROPOSAL 005) — anchor manifests at paragraph boundaries, use overlapping full-manifest copies, and support cross-copy reconstruction — is specified and intended for implementation before working group submission.
 
 ### 6.3 C2PA Working Group Submission
 
