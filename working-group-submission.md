@@ -688,3 +688,14 @@ record is [session_cert_fingerprint]. The injected record is
    add contact URL.
 7. Confirm prior art comparison table (§7) is accurate against
    current published capabilities of C2PA, SynthID, and HaLLMark.
+
+
+## About the author
+
+LPS was designed and implemented by a self-taught software engineer focused on AI system security, cryptographic integrity, and provenance infrastructure for modern text-based systems.
+
+The motivation behind LPS is to address a growing gap in AI-generated content: the inability to reliably trace, verify, and reason about textual provenance at a granular level without relying on opaque or centralized trust assumptions.
+
+This work is part of an ongoing exploration into secure, adversarially resilient systems for AI-assisted environments, with a focus on practical implementation rather than theoretical design alone.
+
+The author welcomes technical review, adversarial feedback, and collaboration from working groups and security-focused engineering communities.
