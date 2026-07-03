@@ -1,3 +1,4 @@
+
 # LINGUISTIC PROVENANCE SCHEMA (LPS)
 ### A proposed text profile for C2PA: span-level AI-contribution provenance
 
@@ -175,27 +176,28 @@ implementation.
 
 **Layer 1 — Anchor manifest:** a minimal manifest containing
 document-level fields only (text_hash, overall_ai_proportion,
-human_proportion, algorithm, signed_at) is embedded at the start
-of every paragraph using the A.8 carrier method. Anchors are
-HMAC-protected to prevent forgery. Anchors survive short copies
-and provide the document-level provenance picture independently
-of the full manifest.
+human_proportion, algorithm, signed_at) would be embedded at the
+start of every paragraph using the A.8 carrier method. Anchors
+would be HMAC-protected to prevent forgery, and would survive
+short copies, providing the document-level provenance picture
+independently of the full manifest.
 
 **Layer 2 — Overlapping redundant full manifest copies:** one complete
-signed manifest copy is embedded per paragraph using the A.9
-distributed carrier method. Adjacent copies overlap by 25% of
-their chunk range. Each chunk carries a positional header
+signed manifest copy would be embedded per paragraph using the A.9
+distributed carrier method. Adjacent copies would overlap by 25% of
+their chunk range. Each chunk would carry a positional header
 (sequence number, total count, copy identifier, type flag) so
-surviving chunks from damaged copies can be identified and
+surviving chunks from damaged copies could be identified and
 combined across copies to reconstruct the full manifest even
 when no single copy survived intact.
 
-Reconstruction logic: the verifier collects all surviving chunks,
-groups by sequence number across all copies, fills gaps in one
-copy using matching sequence positions from other copies, and
-validates the assembled buffer via a SHA-256 checksum stored in
-the first chunk. The number of complete copies scales automatically
-with document length — longer documents carry more redundancy.
+Reconstruction logic (specified): the verifier would collect all
+surviving chunks, group by sequence number across all copies, fill
+gaps in one copy using matching sequence positions from other
+copies, and validate the assembled buffer via a SHA-256 checksum
+stored in the first chunk. The number of complete copies would
+scale automatically with document length — longer documents
+carrying more redundancy.
 
 ### 4.4 Defense-in-depth across four channels
 
@@ -354,28 +356,15 @@ independent C2PA analysis). Signatures use the IEEE P1363 raw r‖s
 encoding specified by the ES256 algorithm identifier — confirmed
 via internal round-trip testing and an independent cross-check
 against the panva/jose library, an unrelated, spec-validated
-JOSE implementation with no shared code path. This confirms the
-underlying signature primitive (curve, hash, byte encoding) is
-genuinely spec-compliant, not merely self-coThis confirms the underlying signature primitive (curve, hash, byte
-encoding) is spec-compliant at the primitive level — not that the
-LPS manifest itself is JOSE/COSE-compatible. The manifest is not
-currently wrapped in a COSE_Sign1 or compact JWS envelope; see §8.8.nsistent within this
-codebase. The manifest is not currently wrapped in a COSE_Sign1
-or compact JWS envelope; full envelope-level interoperability is
-identified as a post-v0.1 target — see Section 8. Signatures are produced using
-ES256 over the P-256 curve with SHA-256, encoded using
-IEEE P1363 r‖s format rather than Node's default DER encoding.
-This has been validated through internal round-trip verification
-and independently confirmed via interoperability testing using
-the panva/jose library, where the signature was successfully verified
-when placed inside a standard compact JWS structure using default
-ES256 verification behavior. This demonstrates compatibility of the
-underlying signature primitive and encoding choice with standard
-ES256 verification tooling. However, LPS does not currently emit a
-JWS or COSE_Sign1 envelope; signatures are carried alongside a
-custom compressed manifest format. Full envelope-level
-interoperability is explicitly deferred to v0.2 (see Section 9).
-
+JOSE implementation with no shared code path. This confirms the 
+underlying signature primitive — curve, hash,
+and byte encoding — is spec-compliant at the primitive level, not
+merely self-consistent within this codebase. It does not mean the
+LPS manifest itself is JOSE/COSE-compatible as a structure: the
+manifest is not currently wrapped in a COSE_Sign1 or compact JWS
+envelope, and a party with off-the-shelf COSE/JOSE tooling cannot
+today parse an LPS-signed manifest directly. Full envelope-level
+interoperability is a post-v0.1 target — see §8.8.
 All four built states reproduced live: an unedited round-trip
 returns verified; adding a visible character returns failed with
 the original manifest; deleting into the carrier region returns
@@ -406,7 +395,7 @@ empirical evidence rather than assertion.
 | Registry recovery after strip | Yes | No | No | Yes |
 | Confidence scoring per span | No | No | No | Yes |
 | Modification degree per span | No | No | No | Yes |
-| Redundant emb| Redundant embedding with reconstruction | No | No | No | Specified¹ |edding with reconstruction | No | No | No | Yes |
+| Redundant embedding with reconstruction | No | No | No | Specified¹ |
 | Lossy reproduction survival | No | Yes | No | No |
 
 ¹ Specified under PROPOSAL 005, not yet implemented in the v0.1
@@ -589,7 +578,7 @@ illustrative/not-yet-producible if shown for architectural clarity:*
 
 ---
 
-## APPENDIX B — PLAIN-LANGUAGE FORENSIC REPORT (worked example — illustrative, not an actual case)
+## APPENDIX B — PLAIN-LANGUAGE FORENSIC REPORT
 
 *(worked example — illustrative, not an actual case)*
 
@@ -669,25 +658,6 @@ record is [session_cert_fingerprint]. The injected record is
 [injected_cert_fingerprint]."
 
 ---
-
-## 10. VERIFY BEFORE SUBMISSION
-
-*[internal — remove before sending]*
-
-1. Confirm no existing C2PA span-level contribution assertion (§3).
-2. Confirm current C2PA spec version and exact assertion
-   vocabulary; align terms.
-3. Confirm RFC 3161 / COSE time-stamp authority is the current C2PA mechanism to cite (§8.2).
-3a. Confirmed June 30 2026 — ES256 signature encoding (IEEE P1363 raw r‖s) verified interoperable at the primitive level with the independent panva/jose library. Envelope-level (COSE_Sign1/JWS) interoperability remains open — see §8.8. Decide before submission whether v0.1 proceeds with primitive-level interoperability stated as-is, or whether envelope adoption should be completed first.
-4. Confirm current EU AI Act Article 50 dates and the
-   marking-guidance instrument names.
-5. Paste measured transport-matrix results (§6) and all eight
-   real JSON outputs (Appendix A).
-6. Resolve author institutional affiliation — confirm whether
-   Act-quiere or Systemactic is the correct entity to list and
-   add contact URL.
-7. Confirm prior art comparison table (§7) is accurate against
-   current published capabilities of C2PA, SynthID, and HaLLMark.
 
 
 ## About the author
