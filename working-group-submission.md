@@ -110,7 +110,7 @@ Built and tested in the v0.1 reference implementation:
 - **verified** — signal intact, signature valid, text hash matches.
 - **failed** — signal found but signature invalid or text modified.
 - **degraded** — signal absent, no registry record.
-- **registry_required** — signal absent, registry record found.
+- _required** — signal absent, registry record found.
 
 Specified under PROPOSAL 005 (redundant embedding architecture,
 §4.3), not yet implemented, targeted for v0.2:
@@ -294,11 +294,19 @@ concept in the current embedding model. HMAC key-derivation
 architecture is under active design; see §8.
 
 **Registry poisoning** (adversary floods registry with fake records)
-— SPECIFIED, not yet implemented: content hash format validation,
-generating_id format validation, and rate limiting are specified
-(SPEC.md §6) but not present in the v0.1 registryClient.mjs,
-which inserts records with no validation ahead of the Supabase
-call. Unlike the anchor and redundant-embedding defenses above, this gap does not depend on PROPOSAL 005 or the pending key-hierarchy decision and is buildable independently before submission.
+— PARTIALLY DEFENDED: content_hash format validation (64
+lowercase hex characters) and a minimal safety-only check on
+generating_id (printable ASCII, 1-128 characters, no control
+characters) are implemented in the v0.1 registryClient.mjs ahead
+of the Supabase insert. The generating_id check is intentionally
+not a structural format validation — the identity/version schema
+question remains open (SPEC.md §9) and is expected to be resolved
+after working group input rather than decided unilaterally in
+advance. Rate limiting is specified (SPEC.md §9) but not yet
+implemented. Unlike the anchor and redundant-embedding defenses
+above, the remaining rate-limiting gap does not depend on
+PROPOSAL 005 or the pending key-hierarchy decision and is
+buildable independently before submission.
 
 **Magic prefix collision** (adversary crafts buffers that match
 the LPS magic prefix by chance or design) — SPECIFIED, not yet
