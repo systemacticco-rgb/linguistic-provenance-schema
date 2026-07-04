@@ -253,15 +253,16 @@ Anchor HMAC protection against anchor forgery is specified under
 PROPOSAL 005, not yet implemented — see §4.3, §8.
 
 **Transfer/replay** (lift a valid signal onto different text) —
-PARTIALLY DEFENDED: the text-hash binds the manifest to its
-specific visible text; a mismatch returns `failed`. In the v0.1
-reference implementation, `original_manifest` is returned on any
-hash mismatch, regardless of edit size. A length-based disclosure
-threshold — withholding `original_manifest` when the received
-text length differs from the signed length by more than a set
-margin, to prevent an adversary from using extreme-mismatch replay
-to study document structure — is specified but not yet implemented.
-See §8 (open question, threshold value TBD).
+DEFENDED: the text-hash binds the manifest to its specific visible
+text; a mismatch returns `failed`. A length-based disclosure
+threshold, locked at 10%, withholds `original_manifest` when the
+received text's length differs from the signed `text_length` by
+more than that margin — preventing an adversary from using
+extreme-mismatch replay to study document structure via repeated
+submissions. `text_length` is a plain manifest field requiring no
+separate cryptographic protection; it is covered by the same
+signature as every other manifest field. See SPEC.md §4.1 (dictionary
+entry) and §9 (threshold lock).
 
 **Impersonation** (sign as an issuer one is not) — SPECIFIED, not yet
   enforced: the trust list mechanism that would defend against
