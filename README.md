@@ -122,13 +122,15 @@ A minimal LPS manifest contains:
 {
   "lps_version": "0.1",
   "text_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "text_length": 1204,
   "content_segments": [
     {
       "segment_id": "s001",
       "start_offset": 0,
       "end_offset": 245,
       "origin": "human",
-      "confidence": 0.95
+      "confidence": 0.95,
+      "confidence_source": "tool"
     },
     {
       "segment_id": "s002",
@@ -136,7 +138,8 @@ A minimal LPS manifest contains:
       "end_offset": 891,
       "origin": "ai_generated",
       "ai_tool": "claude-sonnet-4",
-      "confidence": 0.98
+      "confidence": 0.98,
+      "confidence_source": "tool"
     },
     {
       "segment_id": "s003",
@@ -145,7 +148,8 @@ A minimal LPS manifest contains:
       "origin": "ai_modified_human",
       "ai_tool": "claude-sonnet-4",
       "modification_degree": 0.4,
-      "confidence": 0.87
+      "confidence": 0.87,
+      "confidence_source": "tool"
     }
   ],
   "overall_ai_proportion": 0.62,
@@ -158,7 +162,10 @@ does not include the `signature`, `cert_url`, or `cert_fingerprint`
 fields added by the signing layer — see Section 6 for the full
 signed-manifest shape and current signature encoding status.*
 ```
+
 Confidence values are probabilistic estimates, not legal determinations. They are implementation outputs used to support later interpretation, not standalone verdicts. Any evidentiary use depends on jurisdiction, expert review, and the broader context of the record.
+
+Every segment carries a `confidence_source` field recording how its confidence value was produced. Three values are defined: `tool` (supplied directly by the generating AI tool), `derived` (supplied by an approved AI detection classifier or human reviewer), and `fallback` (calculated by mathematical derivation from document-level character distribution — see Section 4.2 equivalent in SPEC.md §1.2). Note: the v0.1 reference implementation currently only ever produces `tool` or `fallback` — there is no classifier or human-reviewer input path implemented yet, so `derived` is schema-defined but not currently emitted. Once that path is built, this note should be narrowed to document only what the field actually distinguishes at that time, dropping the not-yet-emitted caveat.
 
 ### Compression rules — v0.1
 
@@ -199,7 +206,7 @@ New codes may only be added in future versions.
 A manifest produced under v0.1 must remain readable by any
 future verification tool that supports v0.1.
 
-#### text_hash field
+### text_hash field
 SHA-256 fingerprint of the visible text computed before embedding.
 The verification tool hashes the clean extracted text and compares
 it against this value. If they do not match, the visible text was
@@ -207,6 +214,24 @@ modified after signing and verification returns failed.
 Format: 64-character lowercase hex string.
 Computed by: manifestGenerator.mjs at manifest creation time.
 Checked by: verificationTool.mjs at verification time.
+
+### text_length field
+Character count of the visible text at signing time, computed as
+visibleText.length. Always present — no default omission, unlike
+lv/st. Used only in the failed state (text_hash mismatch) to decide
+whether original_manifest is disclosed: disclosure is withheld when
+the received text's length differs from text_length by more than
+10%. This limits what an adversary can learn from a deliberate
+large-mismatch replay attempt (see working-group-submission.md §5,
+"Transfer/replay"). This field is a plain manifest field with no
+separate cryptographic protection of its own — it is protected the
+same way every other manifest field is, by the signature over the
+whole manifest object (see Section 6 for signature scope). It carries
+no special forgery risk beyond what already applies to text_hash or
+any other signed field.
+Computed by: manifestGenerator.mjs at manifest creation time.
+Checked by: verificationTool.mjs at verification time, failed-state
+disclosure decision only.
 
 ### 3.3 The Token Extension
 
