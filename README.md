@@ -5,7 +5,7 @@
 
 **Status:** v0.1 — reference implementation built and locally tested; core signing, embedding, verification, and registry stub are implemented; PROPOSAL 005 is specified and under development. This document distinguishes implemented behavior, specified architecture, and future work.
 **Author:** Brayan Daniel Rodriguez Lugo  
-**Date:** July 2026
+**Date:** July 2026 
 
 ---
 
