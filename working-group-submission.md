@@ -525,7 +525,6 @@ rather than falling through to a disclosure decision. Consistent
 with §5 "Transfer/replay" (DEFENDED) and SPEC.md §9. Confirmed via
 pipeline-level tests: small-edit (within threshold) discloses;
 extreme-mismatch (beyond threshold) withholds.
----
 
 ## 9. LIMITATIONS
 
