@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 ## Public README
 
->>>>>>> 202405d (Fix manifest example confidence field values)
 # Linguistic Provenance Schema (LPS)
 ### An AI C2PA Contribution Standard
 
@@ -143,11 +140,7 @@ A minimal LPS manifest contains:
       "end_offset": 891,
       "origin": "ai_generated",
       "ai_tool": "claude-sonnet-4",
-<<<<<<< HEAD
       "confidence": 0.98,
-=======
-      "confidence": 98,
->>>>>>> 202405d (Fix manifest example confidence field values)
       "confidence_source": "tool"
     },
     {
@@ -601,7 +594,3 @@ The project is developed independently with a focus on security engineering, sys
 The goal is to evolve LPS into a robust reference implementation that can be reviewed, tested, and extended by security and AI infrastructure communities.
 
 *v0.1 — Work in Progress — July 2026*
-<<<<<<< HEAD
-=======
-
->>>>>>> 202405d (Fix manifest example confidence field values)
