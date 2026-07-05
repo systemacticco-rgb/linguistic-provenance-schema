@@ -514,16 +514,17 @@ submission, separate from PROPOSAL 005.
 
 ### 8.10 Replay disclosure threshold
 
-The `failed` state currently discloses `original_manifest`
-unconditionally on any text-hash mismatch (v0.1 reference
-implementation). A length-mismatch threshold — withholding
-`original_manifest` when received text length differs from
-signed text length beyond a defined margin, to limit what an
-adversary can learn from extreme-mismatch replay attempts — is
-proposed but the threshold value is not yet locked. SPEC.md
-proposes 10% as a starting value pending forensic and legal
-input. Buildable now; not dependent on PROPOSAL 005 or the
-parallel session's key-hierarchy decision.
+The `failed` state discloses `original_manifest` only within a
+length-mismatch threshold, locked at 10% of the signed
+`text_length` (v0.1 reference implementation, verificationTool.mjs
+STEP 4). Received text length differing from signed text length by
+more than 10% withholds `original_manifest`, limiting what an
+adversary can learn from extreme-mismatch replay attempts. A
+manifest missing `text_length` fails closed with no disclosure
+rather than falling through to a disclosure decision. Consistent
+with §5 "Transfer/replay" (DEFENDED) and SPEC.md §9. Confirmed via
+pipeline-level tests: small-edit (within threshold) discloses;
+extreme-mismatch (beyond threshold) withholds.
 ---
 
 ## 9. LIMITATIONS
