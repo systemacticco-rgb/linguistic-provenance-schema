@@ -131,7 +131,7 @@ A minimal LPS manifest contains:
       "start_offset": 0,
       "end_offset": 245,
       "origin": "human",
-      "confidence": 0.95,
+      "confidence": 95,
       "confidence_source": "tool"
     },
     {
@@ -140,7 +140,7 @@ A minimal LPS manifest contains:
       "end_offset": 891,
       "origin": "ai_generated",
       "ai_tool": "claude-sonnet-4",
-      "confidence": 0.98,
+      "confidence": 98,
       "confidence_source": "tool"
     },
     {
@@ -150,7 +150,7 @@ A minimal LPS manifest contains:
       "origin": "ai_modified_human",
       "ai_tool": "claude-sonnet-4",
       "modification_degree": 0.4,
-      "confidence": 0.87,
+      "confidence": 87,
       "confidence_source": "tool"
     }
   ],
