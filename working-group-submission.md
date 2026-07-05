@@ -526,6 +526,27 @@ with §5 "Transfer/replay" (DEFENDED) and SPEC.md §9. Confirmed via
 pipeline-level tests: small-edit (within threshold) discloses;
 extreme-mismatch (beyond threshold) withholds.
 
+### 8.11 Canonicalization determinism across dependency upgrades
+
+The v0.1 reference implementation currently guarantees that a signed
+manifest's canonical byte representation stays reproducible only
+because every deployment is pinned, via lockfile, to one exact
+version of the CBOR encoding library used to produce those bytes.
+This is sufficient for a single, non-distributed reference
+implementation, but not yet resolved for either of two future
+requirements: independent verifiers reproducing byte-identical
+canonicalization after the encoding library is upgraded, and
+PROPOSAL 005's cross-copy reconstruction, which must re-derive
+canonical bytes from recovered fragments. Tagging a manifest with
+its producing encoder version was considered and set aside: it
+introduces a circular trust problem for reconstruction specifically,
+since the verifier would need to already trust a field it cannot yet
+verify in order to know which encoder to reconstruct with. This is
+an open architectural question, not yet solved in the current
+reference implementation, and will need resolution before PROPOSAL
+005 ships or before implementation-level interoperability is
+required.
+
 ## 9. LIMITATIONS
 
 LPS proves the integrity of an origin claim, not its truth.
