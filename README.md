@@ -159,15 +159,16 @@ A minimal LPS manifest contains:
   "signing_tool": "lps-reference-implementation-v0.1",
   "signed_at": "2026-06-07T00:00:00Z"
 }
+```
 *Note: this example illustrates the manifest structure only. It
 does not include the `signature`, `cert_url`, or `cert_fingerprint`
 fields added by the signing layer — see Section 6 for the full
 signed-manifest shape and current signature encoding status.*
-```
+
 
 Confidence values are probabilistic estimates, not legal determinations. They are implementation outputs used to support later interpretation, not standalone verdicts. Any evidentiary use depends on jurisdiction, expert review, and the broader context of the record.
 
-Every segment carries a `confidence_source` field recording how its confidence value was produced. Three values are defined: `tool` (supplied directly by the generating AI tool), `derived` (supplied by an approved AI detection classifier or human reviewer), and `fallback` (calculated by mathematical derivation from document-level character distribution — see Section 4.2 equivalent in SPEC.md §1.2). Note: the v0.1 reference implementation currently only ever produces `tool` or `fallback` — there is no classifier or human-reviewer input path implemented yet, so `derived` is schema-defined but not currently emitted. Once that path is built, this note should be narrowed to document only what the field actually distinguishes at that time, dropping the not-yet-emitted caveat.
+Every segment carries a `confidence_source` field recording how its confidence value was produced. Three values are defined: `tool` (supplied directly by the generating AI tool), `derived` (supplied by an approved AI detection classifier or human reviewer), and `fallback` (calculated by mathematical derivation from document-level character distribution — see SPEC.md §1.2). Note: the v0.1 reference implementation currently only ever produces `tool` or `fallback` — there is no classifier or human-reviewer input path implemented yet, so `derived` is schema-defined but not currently emitted. Once that path is built, this note should be narrowed to document only what the field actually distinguishes at that time, dropping the not-yet-emitted caveat.
 
 ### Compression rules — v0.1
 
@@ -518,6 +519,12 @@ The registry's intended access model (public read vs. credentialed-only) is not 
 ### 4.7 Certificate Revocation Checking Not Implemented
 
 Certificate revocation checking is part of the intended production verification architecture but is not implemented in the current reference implementation. verificationTool.mjs fetches the certificate, confirms its fingerprint matches the manifest, and verifies the signature — it does not check whether the certificate has been revoked. This is a known gap relative to the C2PA weaknesses (Golaszewski et al., §2.1) that motivate LPS's design.
+
+### 4.8 Canonicalization Version Pinning Not Yet Resolved
+
+Signature validity depends on the manifest's canonical byte representation staying reproducible over time. In the current reference implementation this is guaranteed only by pinning every deployment, via lockfile, to one exact version of the CBOR encoding library used to produce those bytes — not by a version identifier recorded in the manifest itself. This is sufficient for a single reference implementation verifying its own output, but is not yet resolved for independent implementations verifying manifests across encoder upgrades, or for PROPOSAL 005's cross-copy reconstruction path, which must re-derive canonical bytes from recovered fragments. This is an open question, not a defect in current behavior — see the working-group submission §8.11 for the reasoning and the approaches considered.
+
+---
 
 ---
 
