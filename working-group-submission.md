@@ -413,9 +413,12 @@ reference implementation. Targeted for v0.2. See §4.3, §8.
 
 ## 8. OPEN QUESTIONS WITH PROPOSED DIRECTIONS
 
-These form a single family — temporal validity and provenance
-chaining across key and edit lifecycle events — and are presented
-together rather than as scattered gaps.
+Sections 8.1–8.9 form a single family — temporal validity and
+provenance chaining across key and edit lifecycle events — and
+are presented together rather than as scattered gaps. Sections
+8.10 and 8.11 are separate, later-identified open questions
+(replay-disclosure threshold and canonicalization determinism,
+respectively) and do not belong to that family.
 
 ### 8.1 Recovery registry in production
 
