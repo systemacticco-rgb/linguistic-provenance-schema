@@ -168,7 +168,7 @@ signed-manifest shape and current signature encoding status.*
 
 Confidence values are probabilistic estimates, not legal determinations. They are implementation outputs used to support later interpretation, not standalone verdicts. Any evidentiary use depends on jurisdiction, expert review, and the broader context of the record.
 
-Every segment carries a `confidence_source` field recording how its confidence value was produced. Three values are defined: `tool` (supplied directly by the generating AI tool), `derived` (supplied by an approved AI detection classifier or human reviewer), and `fallback` (calculated by mathematical derivation from document-level character distribution — see SPEC.md §1.2). Note: the v0.1 reference implementation currently only ever produces `tool` or `fallback` — there is no classifier or human-reviewer input path implemented yet, so `derived` is schema-defined but not currently emitted. Once that path is built, this note should be narrowed to document only what the field actually distinguishes at that time, dropping the not-yet-emitted caveat.
+Every segment carries a `confidence_source` field recording how its confidence value was produced. Three values are defined: `tool` (supplied directly by the generating AI tool), `derived` (supplied by an approved AI detection classifier or human reviewer), and `fallback` (calculated by mathematical derivation from document-level character distribution — see SPEC.md §1.2). Note: the v0.1 reference implementation currently only ever produces `tool` or `fallback` — there is no classifier or human-reviewer input path implemented yet, so `derived` is schema-defined but not currently emitted.
 
 ### Compression rules — v0.1
 
