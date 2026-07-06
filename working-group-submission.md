@@ -110,7 +110,7 @@ Built and tested in the v0.1 reference implementation:
 - **verified** — signal intact, signature valid, text hash matches.
 - **failed** — signal found but signature invalid or text modified.
 - **degraded** — signal absent, no registry record.
-- _required** — signal absent, registry record found.
+- **registry_required** — signal absent, registry record found.
 
 Specified under PROPOSAL 005 (redundant embedding architecture,
 §4.3), not yet implemented, targeted for v0.2:
