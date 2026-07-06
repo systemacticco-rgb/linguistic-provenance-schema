@@ -592,69 +592,100 @@ adversarially.
 
 ## APPENDIX A — VERIFICATION OUTPUT (FOUR BUILT, FOUR SPECIFIED UNDER PROPOSAL 005)
 
---- Verification result ---
-=== evaluateDisclosureThreshold — direct unit tests ===
+### State 1 — verified
 
---- Case 1: missing text_length ---
-PASS {"disclose":false,"reason":"missing_text_length"}
+```json
+{
+  "status": "verified",
+  "signed_at": "2026-07-06T16:30:34.743Z",
+  "algorithm": "es256",
+  "overall_ai_proportion": 0.56,
+  "human_proportion": 0.44,
+  "segments": [
+    {
+      "segment_id": 1,
+      "origin": "human",
+      "confidence": 95,
+      "start_offset": 0,
+      "end_offset": 21,
+      "ai_tool": null,
+      "modification_degree": null
+    },
+    {
+      "segment_id": 2,
+      "origin": "ai_generated",
+      "confidence": 88,
+      "start_offset": 22,
+      "end_offset": 49,
+      "ai_tool": "claude-sonnet",
+      "modification_degree": null
+    }
+  ]
+}
+```
 
---- Case 1b: null text_length ---
-PASS {"disclose":false,"reason":"missing_text_length"}
+### State 2 — failed (large modification, original_manifest withheld)
 
---- Case 2: within threshold (5% delta) ---
-PASS {"disclose":true,"reason":"within_threshold"}
+Text appended after signing exceeds the 10% disclosure threshold. Signature was not touched — manifest integrity holds. Visible text hash does not match.
 
---- Case 2b: exact 10% boundary (inclusive) ---
-PASS {"disclose":true,"reason":"within_threshold"}
-
---- Case 3: exceeds threshold (20% delta) ---
-PASS {"disclose":false,"reason":"exceeds_threshold"}
-
---- Case 3b: just past 10% boundary ---
-PASS {"disclose":false,"reason":"exceeds_threshold"}
-
---- Case 4: zero-length signed text, exact match ---
-PASS {"disclose":true,"reason":"within_threshold"}
-
---- Case 4b: zero-length signed text, any mismatch ---
-PASS {"disclose":false,"reason":"exceeds_threshold"}
-
-=== End evaluateDisclosureThreshold unit tests ===
-
---- [D.6 regression] text_length missing — guard fires, not NaN fallthrough ---
-SKIPPED — no code path in this codebase produces a manifest without text_length.
-Guard is present in verificationTool.mjs STEP 4 (see D.1 comment in source).
-Revisit only if a legacy-manifest migration path is ever introduced.
+```json
 {
   "status": "failed",
-  "reason": "Certificate fingerprint mismatch — fetched certificate does not match manifest record"
+  "reason": "Visible text was modified after signing — content hash does not match. Original manifest withheld: received text length differs from signed text length beyond the disclosure threshold.",
+  "signed_at": "2026-07-06T16:30:34.743Z",
+  "algorithm": "es256"
 }
-FAIL (clean verification: verified status, segment content matches input — origin, offsets, confidence, ai_tool)
---- Adversarial test: tampered text ---
+```
+
+### State 3 — failed (small modification, original_manifest disclosed)
+
+Single-character append. Delta is within the 10% disclosure threshold. original_manifest is returned so the reviewer can compare what was signed against what was received.
+
+```json
 {
   "status": "failed",
-  "reason": "Certificate fingerprint mismatch — fetched certificate does not match manifest record"
+  "reason": "Visible text was modified after signing — content hash does not match",
+  "signed_at": "2026-07-06T16:30:34.743Z",
+  "algorithm": "es256",
+  "original_manifest": {
+    "signed_at": "2026-07-06T16:30:34.743Z",
+    "overall_ai_proportion": 0.56,
+    "human_proportion": 0.44,
+    "segments": [
+      {
+        "segment_id": 1,
+        "origin": "human",
+        "confidence": 95,
+        "start_offset": 0,
+        "end_offset": 21,
+        "ai_tool": null,
+        "modification_degree": null
+      },
+      {
+        "segment_id": 2,
+        "origin": "ai_generated",
+        "confidence": 88,
+        "start_offset": 22,
+        "end_offset": 49,
+        "ai_tool": "claude-sonnet",
+        "modification_degree": null
+      }
+    ]
+  }
 }
-PASS (large-mismatch: failed status, original_manifest withheld — beyond 10% threshold)
+```
 
---- Small-edit test: disclose expected ---
+### State 4 — degraded
+
+No embedded signal found in submitted text. Extraction returned null. No manifest, no signature, no segments. Absence of signal is itself treated as forensic evidence of stripping or tampering.
+
+```json
 {
-  "status": "failed",
-  "reason": "Certificate fingerprint mismatch — fetched certificate does not match manifest record"
+  "status": "degraded",
+  "reason": "No embedded signal found in input text",
+  "anti_forensic_note": "Absence of signal is itself forensic evidence of stripping or tampering"
 }
-FAIL (small-edit: failed status, original_manifest disclosed)
-
-*The following four states are specified under PROPOSAL 005 and
-cannot be produced until it is implemented. Do not paste placeholder
-or hypothetical JSON for these — omit them from this appendix
-entirely until the states exist, or label them explicitly as
-illustrative/not-yet-producible if shown for architectural clarity:*
-- *anchor_only (with anchor fields)*
-- *partial_recovery (with reconstruction_completeness and gap map)*
-- *injection_detected (with both certificate fingerprints)*
-- *reconstruction_corrupted]*
-
----
+```
 
 ## APPENDIX B — PLAIN-LANGUAGE FORENSIC REPORT
 
