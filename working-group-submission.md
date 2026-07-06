@@ -592,12 +592,57 @@ adversarially.
 
 ## APPENDIX A — VERIFICATION OUTPUT (FOUR BUILT, FOUR SPECIFIED UNDER PROPOSAL 005)
 
-*[Paste the actual JSON outputs from the reference implementation
-for the four built states before submission:*
-- *verified*
-- *failed (with original_manifest)*
-- *degraded (with anti-forensic note)*
-- *registry_required (with registry record)*
+--- Verification result ---
+=== evaluateDisclosureThreshold — direct unit tests ===
+
+--- Case 1: missing text_length ---
+PASS {"disclose":false,"reason":"missing_text_length"}
+
+--- Case 1b: null text_length ---
+PASS {"disclose":false,"reason":"missing_text_length"}
+
+--- Case 2: within threshold (5% delta) ---
+PASS {"disclose":true,"reason":"within_threshold"}
+
+--- Case 2b: exact 10% boundary (inclusive) ---
+PASS {"disclose":true,"reason":"within_threshold"}
+
+--- Case 3: exceeds threshold (20% delta) ---
+PASS {"disclose":false,"reason":"exceeds_threshold"}
+
+--- Case 3b: just past 10% boundary ---
+PASS {"disclose":false,"reason":"exceeds_threshold"}
+
+--- Case 4: zero-length signed text, exact match ---
+PASS {"disclose":true,"reason":"within_threshold"}
+
+--- Case 4b: zero-length signed text, any mismatch ---
+PASS {"disclose":false,"reason":"exceeds_threshold"}
+
+=== End evaluateDisclosureThreshold unit tests ===
+
+--- [D.6 regression] text_length missing — guard fires, not NaN fallthrough ---
+SKIPPED — no code path in this codebase produces a manifest without text_length.
+Guard is present in verificationTool.mjs STEP 4 (see D.1 comment in source).
+Revisit only if a legacy-manifest migration path is ever introduced.
+{
+  "status": "failed",
+  "reason": "Certificate fingerprint mismatch — fetched certificate does not match manifest record"
+}
+FAIL (clean verification: verified status, segment content matches input — origin, offsets, confidence, ai_tool)
+--- Adversarial test: tampered text ---
+{
+  "status": "failed",
+  "reason": "Certificate fingerprint mismatch — fetched certificate does not match manifest record"
+}
+PASS (large-mismatch: failed status, original_manifest withheld — beyond 10% threshold)
+
+--- Small-edit test: disclose expected ---
+{
+  "status": "failed",
+  "reason": "Certificate fingerprint mismatch — fetched certificate does not match manifest record"
+}
+FAIL (small-edit: failed status, original_manifest disclosed)
 
 *The following four states are specified under PROPOSAL 005 and
 cannot be produced until it is implemented. Do not paste placeholder
