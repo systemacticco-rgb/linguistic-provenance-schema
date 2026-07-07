@@ -139,6 +139,20 @@ survives copy-paste but not lossy reproduction. The signed manifest
 travels in the soft binding; the hard binding is what the recovery
 registry indexes.
 
+The hard binding is computed after trailing whitespace normalization.
+The rule /[\r\n ]+$/ — stripping trailing carriage returns, newlines,
+and spaces — is applied to the visible text before text_hash and
+text_length are computed at signing time, and to the extracted clean
+text before the received hash is computed at verification time. The
+rule is applied identically at both ends. This normalization was
+derived empirically from the editor survival matrix (July 2026):
+Google Docs appends U+000A on copy-out; Word Browser appends U+0020.
+Without normalization both produce a hash mismatch despite the
+manifest surviving intact. The strip operates from the right end only
+and stops at the first character that is not one of the three
+strippable characters. Internal whitespace and mid-text newlines are
+never affected.
+
 ### 4.2 Confidence source contract
 
 The generating AI tool is the authoritative source of confidence.
@@ -183,13 +197,15 @@ short copies, providing the document-level provenance picture
 independently of the full manifest.
 
 **Layer 2 — Overlapping redundant full manifest copies:** one complete
-signed manifest copy would be embedded per paragraph using the A.9
-distributed carrier method. Adjacent copies would overlap by 25% of
-their chunk range. Each chunk would carry a positional header
-(sequence number, total count, copy identifier, type flag) so
+signed manifest copy would be embedded per paragraph using A.8R, an
+A.8-derived redundant invisible variation-selector chunk carrier.
+A.8R is not C2PA Text A.9; A.9 remains a separate structured
+visible-text compatibility path. Adjacent A.8R copies would overlap
+by 25% of their chunk range. Each chunk would carry a positional
+header (sequence number, total count, copy identifier, type flag) so
 surviving chunks from damaged copies could be identified and
-combined across copies to reconstruct the full manifest even
-when no single copy survived intact.
+combined across copies to reconstruct the full manifest even when
+no single copy survived intact.
 
 Reconstruction logic (specified): the verifier would collect all
 surviving chunks, group by sequence number across all copies, fill
@@ -351,10 +367,8 @@ end to end. The pipeline is four stages: manifest generation
 and confidence_source per segment), signing (canonical-CBOR bytes
 signed with ECDSA P-256, certificate delivered by public URL plus
 fingerprint), embedding (compressed CBOR manifest in the text
-carrier, method A.8 or A.9 selected by payload size), and
-verification (four states — see §3). Redundant copies per
-paragraph are part of PROPOSAL 005, specified but not yet
-implemented.
+carrier; the v0.1 root plain-text path uses A.8 invisible variation
+selectors), and verification (four states — see §3).A.9 structured extraction has been removed from the v0.1 verification path. A.8 is the only extraction path. Redundant copies per paragraph are part of PROPOSAL 005's future A.8R carrier, specified but not yet implemented.
 
 Verified in memory: a freshly embedded text returns verified,
 with the recomputed clean-text hash matching the signed text-hash
@@ -383,13 +397,24 @@ injection_detected, reconstruction_corrupted) belong to PROPOSAL 005
 and will be demonstrated once that architecture is implemented —
 see §3 and §8.
 
-Carrier-survival across real transports is in progress: editors
-that preserve invisible variation selectors (observed directly
-in one major web word processor, where the carrier manifests as
-a cursor that steps over the invisible cluster) preserve the
-signal; transports that normalize Unicode on paste do not. A
-measured transport matrix accompanies this submission as
-empirical evidence rather than assertion.
+Carrier-survival across real transports has been measured empirically.
+A matrix of 37 verification runs across 13 editors and platforms was
+collected July 7 2026. Results: 20 of 22 editors verified with no
+trailing artifact; 2 editors produced hash mismatches caused by
+trailing whitespace appended automatically on copy-out — Google Docs
+appends U+000A, Word Browser appends U+0020. Both are handled by the
+trailing whitespace normalization rule (§4.1). No editor stripped the
+carrier. The signal survived WhatsApp (sent), Telegram (sent), Facebook
+(posted), LinkedIn (posted), Instagram (posted caption), ChatGPT
+(sent, Chrome and Safari), and Claude (sent, Chrome and Safari).
+Messaging platforms including Telegram, WhatsApp, ChatGPT, and Claude
+strip trailing whitespace automatically on send, making the
+normalization rule redundant on their send paths but not in compose.
+Facebook does not normalize on post. The carrier is visible to
+platform character counters — X/Twitter counts variation selectors
+against the character limit, which is indirect confirmation the
+carrier is present on that platform. A full transport matrix is
+included as Appendix C.
 
 
 ---
@@ -585,8 +610,20 @@ provide a quantitative measure of how much of the provenance
 record is present. None of this is testable until PROPOSAL 005
 is built.
 
-These boundaries are stated so they are not discovered
-adversarially.
+The A.8 invisible carrier is treated by operating systems as a
+single grapheme cluster attached to the first visible character.
+On platforms that expose this behavior — observed on macOS in
+iMessage, Telegram, and WhatsApp — pressing backspace at the end
+of the embedded text deletes the entire invisible carrier in one
+or two keystrokes, without any visible indication that a
+provenance signal was present or has been removed. The result is
+a degraded state on verification, which is the correct and honest
+outcome. This is not a defect in the carrier — it is an expected
+consequence of how Unicode grapheme clusters are handled by text
+input systems. A user who deliberately or accidentally backspaces
+through the end of an LPS-embedded text will silently remove the
+provenance signal. The degraded state records this as forensically
+significant.
 
 ---
 
