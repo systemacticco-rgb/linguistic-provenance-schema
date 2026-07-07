@@ -297,24 +297,36 @@ pointing to the certificate and `cert_fingerprint` — a SHA-256
 hash of the certificate — so the verification tool can confirm
 the fetched certificate is authentic before using it.
 
-**Capacity constraint**
-Unicode variation selectors support a maximum of 256 bytes.
-Simple manifests (2-3 segments) fit within this ceiling after
-compression. Complex manifests (4+ segments) use the fallback
-embedding method defined in SPEC.md section 4.
+**Capacity and carrier behavior**
+The v0.1 reference implementation uses Method A.8 for the root
+plain-text copy/paste path. A.8 encodes the compressed manifest as
+invisible Unicode variation selectors appended to the visible text.
+Larger manifests produce longer invisible selector sequences; they
+are not automatically converted into visible structured text blocks.
 
-**Two embedding methods**
-Method A.8 (Unstructured) — appends manifest as one invisible
-block after the visible text. Used when compressed manifest is
-under 220 bytes. Hard ceiling: 256 bytes.
+Earlier drafts described a 220-byte fallback threshold from A.8 to
+A.9. That is no longer the implemented behavior. The practical
+constraint is empirical editor survival: longer invisible payloads
+may be more likely to be normalized, stripped, or damaged by some
+editors or transports and must be measured per copy/paste path.
 
-Method A.9 (Structured) — distributes invisible markers
-throughout the document. Used when compressed manifest exceeds
-220 bytes. No hard ceiling — capacity scales with document
-length. Handles multi-segment and multi-round provenance.
+**Embedding methods**
+Method A.8 (Unstructured) — invisible Unicode variation selectors
+appended to the text. This is the current v0.1 root plain-text
+copy/paste carrier.
 
-The verification tool detects which method was used automatically.
-No flag is required in the manifest.
+Method A.9 (Structured) — visible structured text, such as
+ASCII-armour, comments, or front matter. The verifier may retain
+A.9 extraction for compatibility, but A.9 is not the invisible
+fallback for A.8 because it changes the visual surface of the text.
+
+Future larger invisible manifests are intended to use Proposal 005's
+A.8R carrier: an A.8-derived redundant invisible variation-selector
+chunk layer with sequence headers, overlap, and reconstruction. A.8R
+is future work and is not C2PA Text A.9.
+
+The verification tool reports which method was recovered when that
+information is available.
 
 ### 3.6 The Anti-Forensic Observation
 If an embedded provenance signal is absent, corrupted, or stripped, that absence is itself a relevant observation. LPS does not conclude intent from absence alone. It reports the degraded state, the missing signal, and any corroborating registry or signature evidence that remains available.
@@ -502,7 +514,7 @@ Heavy editing degrades but does not eliminate the signal. Partial detection stil
 
 ### 4.3 Encoding Capacity Constraints
 
-Unicode variation selectors have limited capacity for embedded data. Complex LPS manifests with many segments may require the structured or HTML embedding methods, which are less resilient to copy-paste operations.
+Unicode variation selectors have limited capacity for embedded data. The v0.1 implementation uses A.8 exclusively. Editor survival across production-size manifests has been measured empirically across 13 editors and platforms — see §6.2. No editor in the survival matrix stripped the carrier. Two editors (Google Docs and Word Browser) append trailing whitespace characters on copy-out; this is handled by a normalization rule applied identically at signing and verification time.
 
 ### 4.4 Statistical Detectability
 
@@ -569,6 +581,8 @@ LPS should be developed as an open specification through a working group that in
 
 A reference implementation of LPS manifest generation and verification has been developed in JavaScript/TypeScript, using Node.js built-in `crypto` for signing/verification and `c2pa-text` for text embedding. All four pipeline components — manifest generation, signing, embedding, verification — are built and passing their test suite as of July 2026.
 Signatures use the ES256 primitive (ECDSA P-256, SHA-256, IEEE P1363 raw r‖s encoding), cross-checked against the independent panva/jose library, confirming interoperability of the ES256 cryptographic primitive. This does not imply JOSE/JWS or COSE envelope interoperability. — not a claim that the manifest itself is JOSE/COSE-compatible as a structure. The manifest is not currently wrapped in a COSE_Sign1 or compact JWS envelope; full envelope-level interoperability is a future-version target, not current state.
+
+Text hash and text length are computed after stripping trailing carriage returns (U+000D), newlines (U+000A), and spaces (U+0020) from the visible text. The same strip is applied identically at signing time and verification time. This normalization was derived empirically from an editor survival matrix of 37 verification runs across 13 editors and platforms conducted July 2026. Two editors append trailing characters automatically on copy-out: Google Docs appends a newline, Word Browser appends a space. Without normalization both produce a hash mismatch despite the manifest surviving intact. The rule strips from the right end only and stops at the first character that is not one of the three strippable characters.
 
 A redundant embedding architecture (PROPOSAL 005) — anchor manifests at paragraph boundaries, overlapping full-manifest copies, and cross-copy reconstruction — is specified but not implemented in v0.1. It is scheduled for v0.2 and will be built ahead of submission only if its remaining architectural decisions (key hierarchy, HMAC parameters) resolve cleanly; otherwise it will be submitted as a clearly-scoped, honestly-described v0.2 proposal.
 
