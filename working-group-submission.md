@@ -634,8 +634,13 @@ significant.
 ```json
 {
   "status": "verified",
-  "signed_at": "2026-07-06T16:30:34.743Z",
+  "signed_at": "2026-07-08T02:38:14.081Z",
   "algorithm": "es256",
+  "embedding_method_used": "A.8",
+  "clean_text": "This is human written. This part was AI generated.",
+  "disclosure_threshold_outcome": "not_applicable",
+  "signed_text_length": 50,
+  "received_text_length": 50,
   "overall_ai_proportion": 0.56,
   "human_proportion": 0.44,
   "segments": [
@@ -669,8 +674,13 @@ Text appended after signing exceeds the 10% disclosure threshold. Signature was 
 {
   "status": "failed",
   "reason": "Visible text was modified after signing — content hash does not match. Original manifest withheld: received text length differs from signed text length beyond the disclosure threshold.",
-  "signed_at": "2026-07-06T16:30:34.743Z",
-  "algorithm": "es256"
+  "signed_at": "2026-07-08T02:38:14.081Z",
+  "algorithm": "es256",
+  "embedding_method_used": "A.8",
+  "clean_text": "This is human written. This part was AI generated. TAMPERED",
+  "disclosure_threshold_outcome": "exceeds_threshold",
+  "signed_text_length": 50,
+  "received_text_length": 59
 }
 ```
 
@@ -682,10 +692,15 @@ Single-character append. Delta is within the 10% disclosure threshold. original_
 {
   "status": "failed",
   "reason": "Visible text was modified after signing — content hash does not match",
-  "signed_at": "2026-07-06T16:30:34.743Z",
+  "signed_at": "2026-07-08T02:38:14.081Z",
   "algorithm": "es256",
+  "embedding_method_used": "A.8",
+  "clean_text": "This is human written. This part was AI generated.!",
+  "disclosure_threshold_outcome": "within_threshold",
+  "signed_text_length": 50,
+  "received_text_length": 51,
   "original_manifest": {
-    "signed_at": "2026-07-06T16:30:34.743Z",
+    "signed_at": "2026-07-08T02:38:14.081Z",
     "overall_ai_proportion": 0.56,
     "human_proportion": 0.44,
     "segments": [
