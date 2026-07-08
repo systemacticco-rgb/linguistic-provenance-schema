@@ -91,11 +91,11 @@ Trust list (specified for both signing and registry write
   tool-supplied value is available.
 
 - An explicit algorithm-naming convention: the manifest's algorithm
-  field carries the value es256, using the JOSE algorithm identifier ES256 as its naming basis
-  represented internally in lowercase, identifying ECDSA P-256 with SHA-256 and IEEE P1363
-  raw r‖s signature encoding. This is a naming convention internal
-  to LPS, not a claim that the manifest is itself a COSE or JOSE
-  structure — see §8.8.
+  field carries the internal value es256, identifying ECDSA P-256
+  with SHA-256 and IEEE P1363 raw r‖s signature encoding. This is
+  a naming convention internal to LPS — it is not a JOSE or COSE
+  algorithm identifier and does not imply the manifest is a COSE
+  or JOSE structure. See §8.8. 
 
 - A redundant embedding architecture (PROPOSAL 005), specified
   but not yet implemented, that would provide anchor manifests
