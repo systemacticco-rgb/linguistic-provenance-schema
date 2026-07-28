@@ -3,7 +3,7 @@
 # Linguistic Provenance Schema (LPS)
 ### An AI C2PA Contribution Standard
 
-**Status:** v0.1 — reference implementation built and locally tested; core signing, embedding, verification, and registry stub are implemented; PROPOSAL 005 is specified and under development. This document distinguishes implemented behavior, specified architecture, and future work.
+**Status:** [IMPLEMENTED / PROPOSED] v0.1 reference implementation built and locally tested; core signing, embedding, verification, and registry stub are implemented; PROPOSAL 005 is specified rather than implemented. This document distinguishes implemented behavior, specified architecture, and future work.
 **Author:** Brayan Daniel Rodriguez Lugo  
 **Date:** July 2026 
 
@@ -14,6 +14,91 @@
 Current content provenance systems typically record whether AI was involved, but not the degree, nature, or proportion of that contribution. This proposal defines the Linguistic Provenance Schema (LPS), a manifest schema designed to travel through existing C2PA-style infrastructure and complementary watermarking channels while recording section-level provenance for human-originated text, AI-generated text, and AI-modified human text.
 
 LPS does not replace C2PA or SynthID. It defines a contribution-tracking layer that can be embedded and verified alongside existing provenance signals.
+
+**[PROPOSED] Portfolio position.** LPS v0.1 is the dominant long-term
+signed-manifest system. PROPOSAL 005/A.8R is complementary LPS
+redundancy research, not an independent system or C2PA Text A.9.
+PROPOSALS 006 and 007 are optional mechanisms that do not replace LPS
+v0.1. PROPOSAL 007 is a parallel, provisional cooperative AI-only
+marker proposal: it is removable, forgeable, non-forensic, and human
+span markers are removed from its main grammar; its variants remain
+documentation-only fallbacks.
+
+### Proposal 007 scoped browser testing-tool evidence
+
+[OBSERVED — SCOPED] The observations in this section apply only to
+PROPOSAL 007's cooperative U+2060–U+2064 marker grammar. They are
+separate from this README's signed A.8 manifest transport evidence and
+do not change the v0.1 signed-manifest verification states. PROPOSAL 007
+remains cooperative and forgeable, not cryptographic authentication.
+
+[PENDING CROSS-CHECK] The browser testing-tool results do not confirm
+round trips through other browsers or renderers; messengers or social-media
+platforms; API or LLM channels; Windows or Linux; sanitizers, crawlers,
+IDEs, mobile platforms, or external transports. Those channels remain
+pending cross-check. The observations do not establish a universal browser
+clipboard, transport, or injection-path rule.
+
+For the first retained U+2060 row, ordinary double-click selection and copy
+through JavaScript `textContent`, HTML entity, and JavaScript
+`insertAdjacentText` injection paths preserved one valid document-level
+header and one valid AI pair across Georgia, System UI, and Menlo. The
+verifier recorded one surviving pair against a header total of one and
+reported `100.0% (1 / 1)`. In the observed browser test, the pasted value
+contained two trailing U+000A codepoints. The Proposal 007 verifier's
+defined trailing-normalization rule handles them as trailing
+transport/clipboard whitespace, not application-generated marker content;
+the valid document-level header and AI pair survive. This does not alter
+the separate v0.1 text-hash normalization status.
+
+Endpoint-sensitive drag selection produced different pasted codepoint
+sequences: a complete document-level header and AI pair, header-only input,
+orphaned open or close markers, or no valid document-level header or AI pair.
+Results including E007, E008, E011, and `NO_VALID_MARKDOWN_FOUND` where
+applicable describe the pasted codepoint sequence only; they do not prove
+stripping, provenance, AI origin, or application mutation. Command-modified
+drag selection was inconsistent: both full survival and partial or
+no-valid-signal outcomes were observed. This is a scoped selection-behaviour
+observation, not a deterministic font or injection defect.
+
+| Injection path | Scoped observed selection outcome |
+|---|---|
+| JavaScript `textContent` | Complete selections survived; modified drag selections could yield orphaned-close/no-valid-signal results. |
+| HTML entity | Selection endpoint and drag direction could produce full survival, header-only/orphaned-open results, or no valid signal. |
+| JavaScript `insertAdjacentText` | Selection endpoint and drag direction could produce full survival, header-only/orphaned-open results, orphaned-close/no-valid-signal results, or no valid signal. |
+
+[LIMITATION] These results do not show that one injection path is generally
+safer than another; the observed outcome depends on the selected range. The
+Proposal 007 verifier uses the E001–E011 result vocabulary. Its pathological
+generator exercised controlled verifier inputs with supplied `header total 1
+/ AI spans 1`; it is not a production embedding path.
+
+| Mode | Observed result |
+|---|---|
+| Malformed sequence | E001 `TRUNCATED_MARKER` |
+| Reordered fields | E002 `INVALID_TYPE` |
+| Duplicate header | E006 `DUPLICATE_HEADER`; the first valid document-level header remains authoritative |
+| Orphaned open | E007 `ORPHANED_OPEN` |
+| Orphaned close | E008 `ORPHANED_CLOSE` |
+| Trailing normalization | Valid document-level header and AI pair survive after normalization |
+| Internal codepoints | E009 `INTERNAL_SIGNAL`; the valid AI pair remains counted |
+
+[LIMITATION] In the testing tool, re-embedding text that already contains
+PROPOSAL 007 signals does not remove the prior signals. Repeated embedding
+can create compound input and verifier errors. A production policy for
+pre-embedded input remains undefined and requires separate design work; this
+does not infer how an LLM, provider, or external system must treat
+pre-embedded input.
+
+[OBSERVED — SCOPED] Arabic, Hebrew, and Persian cards use the existing
+Georgia, System UI, and Menlo assignments. The PROPOSAL 007 marker grammar
+does not use LRM, RLM, bidi embeddings, overrides, or isolates. RTL
+visual-selection behaviour and copied-range boundaries remain
+browser-rendering/selection concerns, not evidence that language content
+strips markers. The row labelled U+2060 contains a complete document-level
+header and full AI open/close pair; it is not an isolated-U+2060 survival
+test. Bidi transport, renderer, accessibility, and cross-platform questions
+remain pending cross-check.
 
 ---
 
@@ -78,7 +163,7 @@ SynthID can confirm content came from a SynthID-enabled generator. It cannot tel
 
 The `encypherai/c2pa-text` library (MIT licensed) implements all three C2PA 2.4 text embedding methods:
 
-- **Unstructured (A.8):** Invisible Unicode Variation Selectors appended to text — survive copy-paste operations
+- **Unstructured (A.8):** Invisible Unicode Variation Selectors appended to text — [PENDING CROSS-CHECK] preservation is transport-dependent
 - **Structured (A.9):** ASCII armor blocks inside comments or front matter
 - **HTML (A.7):** Script or link elements in document head
 
@@ -97,7 +182,7 @@ Each system addresses one layer. None address the combination:
 | Persistent in the final document after export | ✗ C2PA breaks on strip, HaLLMark doesn't persist |
 | Records degree and nature of contribution | ✗ SynthID is binary, C2PA records involvement not proportion |
 | Works across generators, not just proprietary tools | ✗ SynthID is closed |
-| Survives copy-paste for text | ✓ c2pa-text Unicode selectors — but only delivers what the manifest contains |
+| Survives copy-paste for text | [PENDING CROSS-CHECK] Unicode selectors have scoped transport evidence; they deliver only what the manifest contains |
 
 The delivery mechanism exists. The standardized manifest schema for contribution tracking does not.
 
@@ -109,12 +194,12 @@ The delivery mechanism exists. The standardized manifest schema for contribution
 
 The Linguistic Provenance Schema (LPS) is a standardized manifest schema for recording degree and nature of AI contribution in digital content. It is designed to be:
 
-- Embedded using existing `c2pa-text` infrastructure (Unicode variation selectors for copy-paste survival)
+- Embedded using existing `c2pa-text` infrastructure (Unicode variation selectors; preservation depends on the transport path)
 - Layered with C2PA metadata manifests and SynthID watermarks as complementary signals
 - Readable by any C2PA-compliant verification tool that implements the LPS extension
 - Applicable to text, audio, and document formats
 
-LPS does not require new embedding infrastructure. It defines what goes inside the manifest that existing infrastructure already delivers.
+For v0.1, LPS does not require new embedding infrastructure. It defines what goes inside the manifest that existing infrastructure delivers. [PROPOSED] PROPOSAL 005/A.8R is a complementary redundant-carriage direction for LPS v0.1, not C2PA Text A.9; it remains future work until specified and accepted.
 
 ### 3.2 What LPS Records
 
@@ -162,8 +247,7 @@ A minimal LPS manifest contains:
 ```
 *Note: this example illustrates the manifest structure only. It
 does not include the `signature`, `cert_url`, or `cert_fingerprint`
-fields added by the signing layer — see Section 6 for the full
-signed-manifest shape and current signature encoding status.*
+fields added by the signing layer — see Section §3.2.1 and the working-group submission appendix for the full signed-manifest shape and current signature encoding status.*
 
 
 Confidence values are probabilistic estimates, not legal determinations. They are implementation outputs used to support later interpretation, not standalone verdicts. Any evidentiary use depends on jurisdiction, expert review, and the broader context of the record.
@@ -185,13 +269,16 @@ present they override the assumption.
 
 #### Confidence encoding
 Confidence values are stored as integers 0-100, not floats 0.0-1.0.
-Example: confidence of 0.95 is stored as 95.
-The verification tool divides by 100 on extraction for display.
+Example: confidence of 0.95 is stored as 95. The verification
+tool returns confidence as integers in v0.1 — division by 100
+for display is specified but not yet implemented in
+verificationTool.mjs. Consumers of the verification output
+should expect integers in the range 0-100.
 
 #### Algorithm field value convention
 The `algorithm` field carries the string value `es256`, 
 derived from the JOSE algorithm identifier ES256, represented 
-internally as thelowercase string es256. This identifies the 
+internally as the lowercase string es256. This identifies the 
 underlying signaturealgorithm used by the LPS implementation 
 — ECDSA P-256, SHA-256, IEEE P1363 raw r‖s
 signature encoding — and is an LPS-internal naming convention,
@@ -219,8 +306,11 @@ Computed by: manifestGenerator.mjs at manifest creation time.
 Checked by: verificationTool.mjs at verification time.
 
 ### text_length field
-Character count of the visible text at signing time, computed as
-visibleText.length. Always present — no default omission, unlike
+Character count of the visible text at signing time, computed
+after the trailing strip rule /[\r\n ]+$/ is applied. The value
+reflects the stripped text length, not the raw input length.
+The same strip is applied identically at verification time before
+the received text length is compared against this field. Always present — no default omission, unlike
 lv/st. Used only in the failed state (text_hash mismatch) to decide
 whether original_manifest is disclosed: disclosure is withheld when
 the received text's length differs from text_length by more than
@@ -229,12 +319,93 @@ large-mismatch replay attempt (see working-group-submission.md §5,
 "Transfer/replay"). This field is a plain manifest field with no
 separate cryptographic protection of its own — it is protected the
 same way every other manifest field is, by the signature over the
-whole manifest object (see Section 6 for signature scope). It carries
+whole manifest object (see Section §3.2.1 for signature scope). It carries
 no special forgery risk beyond what already applies to text_hash or
 any other signed field.
 Computed by: manifestGenerator.mjs at manifest creation time.
 Checked by: verificationTool.mjs at verification time, failed-state
 disclosure decision only.
+
+### 3.2.1 Full signed manifest structure
+
+The signing layer wraps the inner manifest in an envelope that adds
+the cryptographic signature and certificate reference. The canonical
+signed manifest shape — as produced by `signingLayer.mjs` and
+reconstructed by `compression.mjs` `decompress()` — is:
+
+```json
+{
+  "manifest": {
+    "lps_version": "lps-v0.1",
+    "text_hash": "<sha256-64-char-hex>",
+    "text_length": 50,
+    "content_segments": [
+      {
+        "segment_id": 1,
+        "start_offset": 0,
+        "end_offset": 21,
+        "origin": "human",
+        "confidence": 95,
+        "confidence_source": "tool",
+        "ai_tool": null,
+        "modification_degree": null
+      }
+    ],
+    "overall_ai_proportion": 0.56,
+    "human_proportion": 0.44,
+    "signing_tool": "lps-reference-implementation-v0.1",
+    "signed_at": "<ISO-8601>"
+  },
+  "signature": "<base64-encoded-r‖s-bytes>",
+  "cert_url": "https://raw.githubusercontent.com/systemacticco-rgb/lps-certificates/main/cert.pem",
+  "cert_fingerprint": "<sha256-64-char-hex-of-DER-bytes>",
+  "algorithm": "es256",
+  "signed_at": "<ISO-8601>"
+}
+```
+
+**Two `signed_at` fields — they are not duplicates.**
+
+`manifest.signed_at` — the provenance claim timestamp. Produced by
+`manifestGenerator.mjs` at the moment the content segments, hashes,
+and proportions are recorded. This field is inside the signed
+payload and is cryptographically protected by the signature. Any
+alteration to it invalidates verification.
+
+`signed_at` (outer) — the signing envelope timestamp. Produced by
+`signingLayer.mjs` at the moment the manifest is signed and wrapped.
+This field sits outside the signed payload. It is not written to
+the registry — the registry record carries its own `created_at`
+timestamp generated by the database at insert time. The outer
+`signed_at` travels in the signed manifest envelope only. It is
+not cryptographically protected in isolation — its integrity
+depends on the envelope, not on the signature over the inner
+manifest.
+
+In practice both timestamps are nearly identical because manifest
+generation and signing run sequentially in the same pipeline call.
+They are architecturally distinct: the inner timestamp belongs to
+the provenance record, the outer timestamp belongs to the signing
+event and the registry entry.
+
+**`cert_fingerprint`** is a SHA-256 hash of the certificate's
+DER-encoded bytes (`X509Certificate.raw`), not of the PEM string.
+Both the signing layer and the verification tool compute fingerprints
+from DER bytes. Using PEM text would make the comparison sensitive
+to line-ending and encoding differences across platforms.
+
+**`signature`** is the IEEE P1363 raw r‖s encoding of the ECDSA
+P-256 signature over the canonical CBOR bytes of the inner
+`manifest` object, encoded as standard base64. It is not
+DER-encoded and not base64url. See §3.5 and SPEC.md §3 for
+the signing constraints.
+
+**Note:** `original_manifest` returned by the verifier in a `failed`
+state is not this structure. It is a disclosure-safe subset
+containing only `signed_at`, `overall_ai_proportion`,
+`human_proportion`, and `segments`. It intentionally excludes
+`text_hash`, `text_length`, `signature`, `cert_url`,
+`cert_fingerprint`, and `algorithm`. See Appendix A, State 3.
 
 ### 3.3 The Token Extension
 
@@ -242,7 +413,7 @@ In addition to local embedding, LPS supports a token-based architecture where th
 
 ```json
 {
-  "lps_version": "0.1",
+  "lps_version": "lps-v0.1",
   "token": "lps_a7f3c9...",
   "server": "https://verify.lps-standard.org",
   "local_summary": {
@@ -253,7 +424,18 @@ In addition to local embedding, LPS supports a token-based architecture where th
 ```
 Note: the server domain shown above is a placeholder. The hosting architecture remains an open design question for the working group phase, including whether the registry is foundation-hosted, federated, or distributed across multiple compatible nodes.
 
-The server holds the complete manifest record. The local embedding holds a summary and pointer. This hybrid approach provides resilience — local summary survives when server is unavailable, full record is available when it is.
+The registry record contains the content hash, generating identity,
+and timestamp. It does not store the full manifest. The full signed
+manifest — including the complete segment breakdown, origin types,
+confidence values, and proportions — travels in the local embedding.
+The token points to the registry record, not to a stored manifest copy.
+
+[LIMITATION] Registry recovery can corroborate only an exact
+visible-text hash with an existing generation-time record. It does not
+establish why a carrier is absent, restore span-level evidence, or
+replace the embedded signed manifest. A matching record indicates that
+identical text had been registered; it is not a substitute for the
+manifest's contribution fields.
 
 Server-side records also enable:
 
@@ -269,7 +451,7 @@ LPS is most valuable as one layer in a multi-signal system:
 |---|---|---|---|---|
 | C2PA | Metadata manifest | No | Yes — full | Yes |
 | SynthID | Pixel/token watermark | Yes | No — binary | No |
-| LPS | Contribution manifest | Partial | Yes — granular | Proposed |
+| LPS | Contribution manifest | [LIMITATION] Transport-dependent | Yes — granular | Proposed |
 | Behavioral | Statistical patterns | Yes | Partial | Varies |
 
 No single layer is sufficient. The value emerges from triangulation. Partial signals from multiple layers produce a confidence picture more useful and more honest than any binary verdict.
@@ -304,11 +486,49 @@ invisible Unicode variation selectors appended to the visible text.
 Larger manifests produce longer invisible selector sequences; they
 are not automatically converted into visible structured text blocks.
 
+[SECURITY / LIMITATION] A.8 and the proposed A.8R carrier carry the
+Unicode-conformance concern identified for the C2PA unstructured
+variation-selector scheme. This is a carrier and adoption limitation,
+not a claim that LPS cryptographic signatures are invalid.
+
 Earlier drafts described a 220-byte fallback threshold from A.8 to
 A.9. That is no longer the implemented behavior. The practical
 constraint is empirical editor survival: longer invisible payloads
 may be more likely to be normalized, stripped, or damaged by some
 editors or transports and must be measured per copy/paste path.
+
+#### Production constraints and safe operating ranges
+
+[PENDING CROSS-CHECK] Safe manifest size: production manifests with realistic segment counts
+(3–10 segments) land between 400 bytes and 1,500 bytes compressed.
+Invisible character counts at this size remain below approximately
+3,000 variation selectors. The July 2026 study observed clean
+copy-paste behaviour at this size on its scoped test paths.
+
+Editor latency threshold: invisible character counts above approximately
+6,000 variation selectors — corresponding to manifests above
+approximately 2,500–3,000 bytes — produce measurable copy-paste latency
+in rich-text editors that process character-level clipboard payloads.
+Apple Notes on macOS exhibits this behavior at 5kb manifest size and
+above. Latency is not carrier corruption — verification succeeds at all
+tested sizes.
+
+AI compose input reclassification: platforms including Claude and the
+OpenAI ecosystem may reclassify large invisible-character payloads as
+file uploads rather than plain text when pasted into compose inputs. The
+manifest survives reclassification but the workflow breaks. The
+reclassification threshold varies by platform and is not under LPS
+control. Measurement across all target platforms is an open item
+(OPEN-4).
+
+Token overhead: see the token overhead section above.
+
+[PENDING CROSS-CHECK / LIMITATION] Code block constraint: LPS manifests
+must not be embedded inside code syntax blocks. Code renderers may
+display invisible Unicode characters as visible replacement icons or
+colored markers. GitHub file-level preservation is scoped evidence,
+not a universal transport claim. The constraint applies to inline and
+fenced code blocks only.
 
 **Embedding methods**
 Method A.8 (Unstructured) — invisible Unicode variation selectors
@@ -316,26 +536,38 @@ appended to the text. This is the current v0.1 root plain-text
 copy/paste carrier.
 
 Method A.9 (Structured) — visible structured text, such as
-ASCII-armour, comments, or front matter. The verifier may retain
-A.9 extraction for compatibility, but A.9 is not the invisible
-fallback for A.8 because it changes the visual surface of the text.
+ASCII-armour, comments, or front matter. A.9 is not part of the
+v0.1 verification path and is not implemented in the current
+verifier. A.8 is the only extraction path. A.9 is defined in C2PA
+Text as a structured visible-text method; it is not an invisible
+fallback for A.8 and remains outside v0.1 scope.
 
-Future larger invisible manifests are intended to use Proposal 005's
+[PROPOSED] Future larger invisible manifests may use PROPOSAL 005's
 A.8R carrier: an A.8-derived redundant invisible variation-selector
-chunk layer with sequence headers, overlap, and reconstruction. A.8R
-is future work and is not C2PA Text A.9.
+chunk direction. It is complementary LPS research, remains future
+work, and is not C2PA Text A.9.
 
 The verification tool reports which method was recovered when that
 information is available.
 
-### 3.6 The Anti-Forensic Observation
-If an embedded provenance signal is absent, corrupted, or stripped, that absence is itself a relevant observation. LPS does not conclude intent from absence alone. It reports the degraded state, the missing signal, and any corroborating registry or signature evidence that remains available.
+### 3.6 The Anti-Forensic Boundary
 
-The forensic value of LPS is not that it declares tampering automatically. The value is that it preserves structured evidence about which provenance signals survived, which failed, and what that pattern implies when interpreted by a qualified reviewer.
+[LIMITATION] If an embedded provenance signal is absent or corrupted,
+LPS reports the degraded state and any independently available
+evidence. Carrier absence establishes neither stripping, intent, nor
+human authorship.
+
+[SECURITY] Invisible Unicode alone establishes neither AI origin nor
+malicious intent. LPS v0.1 can verify the integrity of a signed claim;
+it does not convert a missing carrier into a forensic attribution.
 
 ### 3.7 Server-Side Notarization Registry
 
-The embedded LPS manifest survives some text-preserving transformations such as copy-paste, but not all transformations. Screenshots, OCR, retyping, and analog conversion may remove or destroy the embedded signal. When that happens, the verification tool can fall back to registry evidence if a matching record exists.
+The embedded LPS manifest has scoped copy-paste evidence, not a
+universal survival guarantee. Screenshots, OCR, retyping, and analog
+conversion may remove or destroy the embedded signal. When that
+happens, the verification tool can consult registry evidence only if
+an exact visible-text hash matches an existing generation-time record.
 
 The registry is an auxiliary evidence layer, not a substitute for the embedded manifest or cryptographic verification.
 
@@ -363,21 +595,21 @@ received document and compares. If they match, the
 document is confirmed as existing at that timestamp
 unchanged.
 
-If the embedded signal was stripped: the verification
-tool hashes the received document and queries the registry
-by content hash. If a record exists, origin is confirmed
-even without any embedded signal. A document that was
-screenshotted, OCR'd, or retyped letter by letter — if
-the resulting text matches the registry record — is
-confirmed.
+If the embedded signal is absent: the verification tool hashes the
+received document and queries the registry by content hash. If an
+existing generation-time record matches the exact visible-text hash,
+it can corroborate that registered text existed at that recorded time.
+It does not independently confirm origin type, contribution
+proportion, issuer, or the reason the carrier is absent. The embedded
+manifest is the source of those fields. Registry recovery returns the
+registry_required state, not verified.
 
 **What it cannot confirm**
 
-The registry confirms that a registered content hash existed at a 
-recorded time. It does not by itself confirm authorship, origin type,
-or contribution proportion.” That is what the embedded LPS
-manifest provides. The two layers are complementary. 
-Neither is sufficient alone.
+The registry can corroborate only that an exact visible-text hash has
+an existing generation-time record. It does not by itself confirm
+authorship, origin type, contribution proportion, or carrier removal.
+The embedded LPS manifest is the source of the contribution fields.
 
 **Why it requires AI provider cooperation**
 
@@ -388,12 +620,11 @@ party had the document at that moment, not when the AI
 generated it. The forensic value depends on the record
 existing before the content leaves the generating system.
 
-Adoption requires either regulatory mandate — EU AI Act
-Article 50 creates the demand — or voluntary commitment
-from AI providers. The LPS reference implementation
-demonstrates the architecture. The working group
-submission proposes the standard. Provider adoption
-is the third step.
+[LAW / COMPLIANCE] Article 50 is an external adoption and compliance
+context, not proof that an LPS carrier is compliant. The Code of
+Practice is voluntary. Provider adoption remains an external
+dependency; the reference implementation demonstrates a reference
+architecture and the working-group submission proposes a standard.
 
 **Architecture status**
 
@@ -404,21 +635,23 @@ and timestamp at generation time. queryRegistry() retrieves
 by token or content hash fallback.
 verificationTool.mjs registry_required state triggers
 queryRegistry() when no embedded signal is found.
-Full production architecture: PROPOSALS.md PROPOSAL 001.
+Full production architecture: see the working-group submission §8.1.
 Open questions: registry hosting, record retention,
 token revocation, cross-registry legal access.
 
 ### 3.8 Token Binding and Bypass Countermeasures
 
-The embedded LPS manifest survives copy-paste. It does not
-survive screenshot. A user who photographs their screen and
-runs OCR on the result receives clean text with no invisible
-characters. Every embedded signal is gone. No cryptographic
-mechanism can prevent this at the content level.
+[LIMITATION] The embedded LPS manifest has scoped copy-paste evidence;
+it does not survive every transformation. Screenshot, OCR, and retyping
+can leave clean text with no invisible carrier. No cryptographic
+mechanism prevents that at the content level.
 
-PROPOSAL 002 addresses this through three independent layers.
+This issue is handled as a separate future device-capture discussion and is not part of the registry architecture described here.
 
 **Layer 1 — Screenshot blocking on native apps**
+
+[HOLD] This is a future device-capture direction, not a v0.1 LPS
+capability or an established carrier-preservation claim.
 
 Native mobile implementations of LPS-compliant AI tools
 render generated content in a hardware-backed protected
@@ -435,6 +668,10 @@ the screen remains an irreducible residual risk.
 
 **Layer 2 — Server-side token binding**
 
+[PROPOSED] Server-side binding is a registry direction, not a
+replacement for the signed manifest or a way to infer why a carrier is
+absent.
+
 At generation time, the AI tool registers the content with
 the LPS registry. The registry binds three things to a
 unique cryptographically random token: the content hash,
@@ -442,16 +679,15 @@ the generating identity — which AI tool, which account —
 and the creation timestamp.
 
 The token is embedded in the document alongside the LPS
-manifest. When the signal is stripped — screenshot, OCR,
-manual removal — the token is gone from the document.
+manifest. When the signal is absent after screenshot, OCR,
+or manual removal, the token may also be absent from the document.
 The server-side binding is not. The registry record exists
 permanently and independently of what happens to the document.
 
-When the content is later hashed by any party — a court,
-a regulator, a journalist — the hash matches the registry
-record. The generating identity is in that record. The
-stripping accomplished nothing forensically. The bypass
-succeeded technically and failed forensically.
+When the content is later hashed by any party, a registry match can
+corroborate only an exact visible-text hash with an existing
+generation-time record. It does not establish stripping, intent,
+human authorship, or recover span-level evidence.
 
 This is the direct equivalent of the Chilean transit QR
 system: the QR was screenshotted, the visual was bypassed,
@@ -474,15 +710,11 @@ content was held and used without verification for a
 documented period. That gap contributes to the forensic
 picture without being conclusive alone.
 
-**The law as the mandatory checkpoint**
+**The law as an external adoption context**
 
-The technology cannot force verification. The law can.
-Court submission, regulatory filing, publication under
-disclosure requirements — these are the mandatory
-checkpoints. LPS is what the checkpoint checks.
-The registry is what the checkpoint records.
-EU AI Act Article 50 creates the demand.
-PROPOSAL 002 defines the architecture that fulfils it.
+[LAW / COMPLIANCE] Legal disclosure and regulator interpretation are
+external to LPS. Article 50 does not make an LPS carrier compliant or
+turn a registry record into proof of disclosure compliance.
 
 **Architecture status**
 
@@ -492,33 +724,45 @@ writes a usage_events record with token, queried_by,
 query_type, and timestamp. Token path and content hash
 fallback path both logged independently.
 Full production architecture including identity binding
-and credentialed access: PROPOSALS.md PROPOSAL 002.
+and credentialed access: see the working-group submission §5.
 ---
 
 ## 4. Limitations
 
 ### 4.1 Requires AI Developer Cooperation
 
-LPS manifests must be generated by the AI tool at creation time. Retrofitting LPS to existing content is not possible. Adoption requires AI developers to implement LPS manifest generation in their tools — the same cooperation requirement as C2PA and SynthID.
+[LIMITATION] LPS manifests require generation-time cooperation from the
+producing tool. Provider cooperation, transport preservation, renderer
+behaviour, crawler interpretation, and regulator scope are external
+dependencies.
 
 ### 4.2 Laundering Vulnerability
 
 | Attack Vector | LPS Response |
 |---|---|
-| Copy-paste | Unicode variation selectors survive — LPS persists |
+| Copy-paste | [PENDING CROSS-CHECK] Preservation is transport-dependent |
 | Re-encoding through different formats | Manifest may be stripped — LPS degrades |
 | Analog conversion (photograph of screen, re-recording of audio) | Manifest destroyed — LPS fails |
-| Heavy editing | Segment boundaries shift, confidence scores degrade — partial signal remains |
+| Heavy editing that preserves the carrier | Carrier intact, visible text hash mismatches — returns failed. original_manifest disclosed or withheld depending on the 10% length threshold. |
+| Heavy editing that removes the carrier | Carrier absent or corrupted — returns degraded. Carrier absence does not establish stripping, intent, or human authorship. |
 
-Heavy editing degrades but does not eliminate the signal. Partial detection still contributes to the confidence picture.
+[LIMITATION] A degraded result reports the available evidence; it does
+not attribute a cause to carrier absence.
 
 ### 4.3 Encoding Capacity Constraints
 
-Unicode variation selectors have limited capacity for embedded data. The v0.1 implementation uses A.8 exclusively. Editor survival across production-size manifests has been measured empirically across 13 editors and platforms — see §6.2. No editor in the survival matrix stripped the carrier. Two editors (Google Docs and Word Browser) append trailing whitespace characters on copy-out; this is handled by a normalization rule applied identically at signing and verification time.
+[PENDING CROSS-CHECK / LIMITATION] Unicode variation selectors have
+limited capacity for embedded data. The v0.1 implementation uses A.8
+exclusively. Transport observations from the survival matrix are scoped
+evidence, not universal editor or platform claims. The A.8 carrier also
+has the named Unicode-conformance concern; this is a carrier/adoption
+limitation, not a cryptographic-signature invalidity claim.
 
 ### 4.4 Statistical Detectability
 
-Sophisticated adversaries with knowledge of the encoding scheme may be able to detect and strip LPS signals. Defense is the layered approach — stripping one layer leaves others intact and the act of stripping is itself detectable.
+[SECURITY / LIMITATION] Sophisticated adversaries may be able to detect
+and strip LPS signals. Layering can preserve independent evidence, but
+carrier absence alone does not establish stripping or intent.
 
 ### 4.5 Trust List Not Yet Implemented
 
@@ -526,7 +770,7 @@ The trust list described as reused C2PA infrastructure is architecturally specif
 
 ### 4.6 Registry Access Model Undefined
 
-The registry's intended access model (public read vs. credentialed-only) is not yet settled between this repository's design documents — see PROPOSALS.md PROPOSAL 001 for the open tiered-access question. Treat any statement about registry access as provisional until the working group resolves registry hosting and access architecture.
+The registry's intended access model (public read vs. credentialed-only) is not yet settled between this repository's design documents —see the working-group submission §8.1 for the open tiered-access question. Treat any statement about registry access as provisional until the working group resolves registry hosting and access architecture.
 
 ### 4.7 Certificate Revocation Checking Not Implemented
 
@@ -536,7 +780,15 @@ Certificate revocation checking is part of the intended production verification 
 
 Signature validity depends on the manifest's canonical byte representation staying reproducible over time. In the current reference implementation this is guaranteed only by pinning every deployment, via lockfile, to one exact version of the CBOR encoding library used to produce those bytes — not by a version identifier recorded in the manifest itself. This is sufficient for a single reference implementation verifying its own output, but is not yet resolved for independent implementations verifying manifests across encoder upgrades, or for PROPOSAL 005's cross-copy reconstruction path, which must re-derive canonical bytes from recovered fragments. This is an open question, not a defect in current behavior — see the working-group submission §8.11 for the reasoning and the approaches considered.
 
----
+### 4.9 Code Block Carrier Not Defined
+
+[PENDING CROSS-CHECK / LIMITATION] LPS manifests cannot be embedded
+inside inline or fenced code syntax blocks in v0.1. Code renderers may
+display variation selectors as visible replacement icons or coloured
+markers. GitHub file-level preservation is scoped evidence, not a
+universal claim. No carrier mechanism for code-block provenance is
+defined in v0.1.
+
 
 ---
 
@@ -547,7 +799,7 @@ Signature validity depends on the manifest's canonical byte representation stayi
 Courts are already encountering AI-generated evidence without standardized tools for evaluating provenance claims. LPS enables a structured forensic report that documents:
 
 - What provenance signals were present at time of verification
-- What signals were absent and why their absence is significant
+- What signals were absent, without inferring the cause of absence
 - The pattern of degradation across the file's history
 - Confidence levels for each finding
 
@@ -561,8 +813,12 @@ News organizations verifying content from external sources need to know not just
 
 ### 5.3 Compliance
 
-The EU AI Act (Article 50) requires disclosure when content is AI-generated. LPS provides the technical infrastructure for that disclosure to be persistent, verifiable, and granular rather than a voluntary label that can be removed.
-The EU Commission published the final Code of Practice on Transparency of AI-Generated Content on 10 June 2026, a voluntary framework — compliance with it is not itself mandatory, but it is expected to serve as the practical benchmark regulators use to assess compliance with the binding obligations in Article 50. The Code sets out a multilayered approach including machine-readable marking, watermarking, and visible indicators. Article 50's obligations become enforceable on 2 August 2026, with a transitional period until 2 December 2026 for systems already on the market before that date. LPS is positioned as a contribution-tracking layer that can support the metadata/marking requirement at a granularity existing standards do not provide.
+[LAW / COMPLIANCE] Article 50 is an external adoption and compliance
+context. It does not prove that any LPS carrier is compliant. The Code
+of Practice is voluntary, and provider marking and deployer disclosure
+remain distinct obligations whose scope depends on the applicable legal
+and regulatory interpretation. LPS may be evaluated as a
+contribution-tracking layer; it is not a compliance certification.
 
 ---
 
@@ -579,17 +835,63 @@ LPS should be developed as an open specification through a working group that in
 
 ### 6.2 Reference Implementation
 
-A reference implementation of LPS manifest generation and verification has been developed in JavaScript/TypeScript, using Node.js built-in `crypto` for signing/verification and `c2pa-text` for text embedding. All four pipeline components — manifest generation, signing, embedding, verification — are built and passing their test suite as of July 2026.
+[IMPLEMENTED] A reference implementation of LPS manifest generation and
+verification has been developed in JavaScript (Node.js ES modules),
+using Node.js built-in `crypto` for signing/verification and
+`c2pa-text` for text embedding. Dependency code in `node_modules` is
+outside the repository implementation scope. The core pipeline is built
+and locally tested.
+
+[HOLD — LANGUAGE MIGRATION] JavaScript remains a reference
+implementation environment. Runtime latency, typed integration
+contracts, binary-hash handling, CPU concurrency, and cross-language
+transport remain production dependencies, not submission blockers.
 Signatures use the ES256 primitive (ECDSA P-256, SHA-256, IEEE P1363 raw r‖s encoding), cross-checked against the independent panva/jose library, confirming interoperability of the ES256 cryptographic primitive. This does not imply JOSE/JWS or COSE envelope interoperability. — not a claim that the manifest itself is JOSE/COSE-compatible as a structure. The manifest is not currently wrapped in a COSE_Sign1 or compact JWS envelope; full envelope-level interoperability is a future-version target, not current state.
 
-Text hash and text length are computed after stripping trailing carriage returns (U+000D), newlines (U+000A), and spaces (U+0020) from the visible text. The same strip is applied identically at signing time and verification time. This normalization was derived empirically from an editor survival matrix of 37 verification runs across 13 editors and platforms conducted July 2026. Two editors append trailing characters automatically on copy-out: Google Docs appends a newline, Word Browser appends a space. Without normalization both produce a hash mismatch despite the manifest surviving intact. The rule strips from the right end only and stops at the first character that is not one of the three strippable characters.
+[PENDING CROSS-CHECK] Text hash and text length are computed after
+stripping trailing carriage returns (U+000D), newlines (U+000A), and
+spaces (U+0020) from the visible text. The same strip is applied at
+signing and verification time. This rule was derived from a scoped
+editor survival matrix, not a universal transport claim. Two observed
+editors append trailing characters automatically on copy-out: Google
+Docs appends a newline and Word Browser appends a space. Without
+normalization both observed paths produce a hash mismatch despite the
+manifest surviving intact.
 
-A redundant embedding architecture (PROPOSAL 005) — anchor manifests at paragraph boundaries, overlapping full-manifest copies, and cross-copy reconstruction — is specified but not implemented in v0.1. It is scheduled for v0.2 and will be built ahead of submission only if its remaining architectural decisions (key hierarchy, HMAC parameters) resolve cleanly; otherwise it will be submitted as a clearly-scoped, honestly-described v0.2 proposal.
+[PROPOSED] A redundant embedding architecture (PROPOSAL 005/A.8R) is
+complementary LPS redundancy research, not an independent system or
+C2PA Text A.9. Its anchors, overlapping copies, and reconstruction
+remain specified rather than implemented, and retain the A.8
+Unicode-conformance concern.
+
+Text carrying LPS-embedded manifests incurs increased token
+consumption when passed to any language model API. Unicode variation
+selectors used by the A.8 carrier are not collapsed by tokenizers —
+each invisible character consumes token budget independently.
+[PENDING CROSS-CHECK] Candidate production manifests in the stated
+3–10-segment, 400–1,500-byte compressed range produce invisible
+character counts below approximately 3,000 variation selectors. Token
+overhead and transport behaviour remain implementation- and
+platform-dependent; larger profiles require separate measurement.
+
+Two adoption scenarios both carry this constraint. If LPS is adopted
+at generation time — the AI provider embeds a manifest at the moment
+content is produced — the embedded text returned to the caller
+already carries the invisible payload, and any downstream API call
+passing that text to another model will consume additional tokens. If
+LPS is adopted via API retrieval — a third party fetches or receives
+LPS-embedded text and passes it to a model — the same overhead
+applies at that call boundary. In either case, integrations must
+account for this overhead in token budget planning.
+
+Strip the manifest before passing text to contexts where token cost
+is the primary constraint and provenance is not required at that step.
 
 ### 6.3 C2PA Working Group Submission
 
-This proposal will be submitted to the C2PA working group as a formal extension proposal after the reference implementation validates the technical architecture.
-
+This proposal has been prepared as a formal working-group
+submission. The reference implementation validates the technical
+architecture described in this document.
 ---
 
 ## 7. References
