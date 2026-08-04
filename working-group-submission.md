@@ -190,7 +190,7 @@ internal-signal path.
 The observations are deliberately narrow. Firefox/Linux results do not prove
 universal browser, operating-system, editor, clipboard, rendering, or
 provider compatibility. Rendering is application-specific: LibreOffice on
-Linux showed no glyphs; Linux VS Code showed yellow outlined squares in code
+Linux showed glyphs; Linux VS Code showed yellow outlined squares in code
 files only; Windows VS Code showed rectangles; Windows browser testing showed
 no visual glyphs; and Windows OneNote rendered `ƒ{}`. Rendering alone is a
 usability/disclosure concern, not evidence of marker corruption.
