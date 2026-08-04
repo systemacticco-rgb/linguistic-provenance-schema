@@ -1,5 +1,11 @@
 # Linguistic Provenance Schema (LPS)
 
+**Status:** v0.1 draft for working-group review
+
+**Author:** Brayan Daniel Rodriguez Lugo
+
+**Contact:** rodriguezlugobrayandaniel@gmail.com
+
 ## Working-group submission
 
 **Status:** audited reference-implementation current state; not evidence of
