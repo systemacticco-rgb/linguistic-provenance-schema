@@ -12,7 +12,7 @@ AI-modified-human segments, confidence, and confidence provenance.
 
 This submission explains the audited scope and the decisions reviewers would
 need to evaluate. It is not the normative field-by-field specification; that
-contract is in [`SPEC.md`](../SPEC.md).
+contract is in https://github.com/systemacticco-rgb/lps-reference-implementation/blob/main/SPEC.md
 
 ## 1. Scope and standards boundary
 
