@@ -169,6 +169,24 @@ envelope, selector-carrier, registry, cryptographic, or production-trust
 contract. They are bounded evidence about the Proposal 007 marker parser and
 tested clipboard/rendering paths.
 
+### 8.1 Proposed testing-tool architecture — ADR 2
+
+ADR 2 is a proposed, tool-only marker/header design record. It uses an AI-only
+model, a document-scoped base-5 total-count header, and an approved
+U+2060–U+2064 library. Human spans and per-span ordinal or total-count fields
+are excluded. The resulting header can support count-level anomaly reporting,
+but cannot locate an ordinal gap or preserve the former human-marker
+selective-stripping signal. Lens 200 remains undefined for inputs above 200
+visible characters and has no LPS v0.1 or production requirement.
+
+The tool normalizes received codepoints before scanning. An approved-library
+codepoint in a valid pair's content is a forensic internal-signal observation;
+it does not authenticate the content, establish AI origin, or make a valid
+pair an LPS provenance record, and does not remove the pair from the tool's
+valid-pair count. Marker forgery and removal remain possible for any party able
+to edit text, and a missing marker does not prove stripping, intent, authorship,
+or human origin.
+
 | Tested case | Observed result | Testing-tool verifier result |
 |---|---|---|
 | Firefox/Linux hold-and-drag copy/paste | 100% marker survival in the tested flow | Valid |
@@ -187,10 +205,43 @@ testing-tool-only, and excludes human spans, per-span ordinals, and per-span
 total-count fields. Internal codepoints inside valid marker context use the
 internal-signal path.
 
+### 8.2 Recorded cross-transport observations — ADR 3 (2026-07-29)
+
+ADR 3 is a separate recorded evidence log for the Proposal 007 U+2060–U+2064
+testing tool. “100% survival” below means only that the tool found valid
+signals after the named exercised route; it is not an interoperability,
+clipboard, provenance, authorship, or stripping conclusion.
+
+| Target | Recorded result | Scoped route observation |
+|---|---:|---|
+| Facebook Messenger | 100% survival | Desktop send → logout/login → mobile copy → resend → verifier. Double-click selection added trailing U+0020; iPhone-to-macOS Universal Clipboard succeeded. |
+| Telegram | 100% survival | Desktop send → mobile copy → resend → verifier. Double-click or precise highlighting was needed for reliable selection; Universal Clipboard succeeded. |
+| WhatsApp | 100% survival | Desktop send → mobile copy → resend → verifier. Double-click or precise highlighting was needed for reliable selection; Universal Clipboard succeeded. |
+| Universal Clipboard, iPhone → macOS | 100% survival | A payload passed from the Claude mobile app to macOS and validated in the tool. |
+| Facebook Web, macOS | No post survival recorded | Composer retained signals; the observed post path did not. The record does not identify a cause. |
+| Instagram Web, macOS | 100% survival | Composer and post retained valid signals; Universal Clipboard was observed. |
+| ChatGPT Web and desktop app, macOS | 100% survival | Sent messages retained valid signals when checked after days. |
+| Claude Web and desktop app, macOS | 100% survival | Sent messages retained valid signals when checked after days. |
+| Gemini Web, macOS | 100% survival | Sent messages retained valid signals. |
+| X | 100% survival | Signals survived posting; no conclusion follows for video or photo editors. |
+| Photoshop | 100% survival | No loss was observed; this does not generalize to video or photo editors. |
+| Android and iOS mobile browser/tool use | 100% survival | The testing tool opened and validated on both mobile platforms. |
+| Reddit, macOS browser | 100% survival | Valid signals survived after posting. |
+| Notion desktop app, macOS | 100% survival | Valid signals survived copy/paste. |
+| Slack desktop app, macOS | 100% survival | Valid signals survived copy/paste and sending. |
+
+Selection and highlighting are part of the received-input boundary. A trailing
+character or no-valid-signal result describes the sequence received by the
+tool; it does not identify a responsible service, establish mutation, or infer
+provenance. “No visual glyphs” is a rendering observation only, not
+accessibility, font, renderer, or cross-platform evidence. The earlier report
+of a different, longer LPS carrier on Facebook is not comparative evidence for
+this Proposal 007 marker tool.
+
 The observations are deliberately narrow. Firefox/Linux results do not prove
 universal browser, operating-system, editor, clipboard, rendering, or
 provider compatibility. Rendering is application-specific: LibreOffice on
-Linux showed glyphs; Linux VS Code showed yellow outlined squares in code
+Linux showed no glyphs; Linux VS Code showed yellow outlined squares in code
 files only; Windows VS Code showed rectangles; Windows browser testing showed
 no visual glyphs; and Windows OneNote rendered `ƒ{}`. Rendering alone is a
 usability/disclosure concern, not evidence of marker corruption.
@@ -198,8 +249,9 @@ usability/disclosure concern, not evidence of marker corruption.
 Open review work remains to identify the source of trailing spaces, repeat
 clipboard paths across browsers, systems, and applications, determine whether
 BiDi highlighting can affect selection boundaries or codepoint order, and
-version-test glyph rendering. The exact testing-tool error identifiers and
-normalized indexes remain fixed unless an approved error-catalog change is
-made. The detailed session record is maintained separately as an internal
-append-only addendum; it remains separate from the LPS implementation ADR
-material.
+version-test glyph rendering. ADR 3 does not establish Windows or Linux route
+behavior, external API or LLM transit, sanitizer treatment, accessibility, or
+editor generalization. The shown local-test output identifiers and normalized
+indexes remain separate from ADR 2's proposed detailed error catalog until a
+Proposal 007 catalog reconciliation is approved. All Proposal 007 material
+remains separate from the LPS implementation ADR and current v0.1 contract.
