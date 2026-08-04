@@ -73,8 +73,23 @@ Proposal 007 is a separate cooperative-marker testing-tool effort and does
 not change the LPS envelope, registry, or verification contract described
 above. Its local Firefox/Linux tests observed marker survival for drag-copy,
 double-click copy, BiDi-language content, and trailing normalization; malformed,
-duplicate-header, orphaned-marker, and internal-codepoint inputs were rejected
-with their testing-tool-specific deterministic errors.
+duplicate-header, and orphaned-marker inputs were deterministically classified
+with testing-tool-specific errors, while internal codepoints were detected as
+tool-level signals.
+
+Human spans and per-span ordinal/count fields are excluded; this limits
+the tool to count-level observations and does not authenticate a marker or
+prove origin. Lens 200 and the detailed marker grammar remain testing-tool
+scope, not LPS v0.1 requirements.
+
+Named messenger, social, AI-client, editor, mobile, and clipboard paths produced
+valid signals in their exercised flows, while the observed Facebook Web post
+path did not retain a signal even though its composer did. Selection can change
+the received sequence, including an observed trailing U+0020 in one Messenger
+flow. These results describe received inputs only; they do not identify a
+service as the cause of loss or establish portability, provenance, authorship,
+or production suitability. The working-group submission contains the route
+matrix and limits.
 
 These are limited observations, not a portability guarantee. Glyph rendering
 varied between LibreOffice, VS Code, browsers, and OneNote; a visual glyph is
