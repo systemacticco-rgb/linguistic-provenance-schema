@@ -205,10 +205,9 @@ testing-tool-only, and excludes human spans, per-span ordinals, and per-span
 total-count fields. Internal codepoints inside valid marker context use the
 internal-signal path.
 
-### 8.2 Recorded cross-transport observations — ADR 3 (2026-07-29)
+### 8.2 Recorded cross-transport observations
 
-ADR 3 is a separate recorded evidence log for the Proposal 007 U+2060–U+2064
-testing tool. “100% survival” below means only that the tool found valid
+“100% survival” below means only that the tool found valid
 signals after the named exercised route; it is not an interoperability,
 clipboard, provenance, authorship, or stripping conclusion.
 
