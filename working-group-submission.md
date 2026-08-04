@@ -19,8 +19,8 @@ contract is in https://github.com/systemacticco-rgb/lps-reference-implementation
 LPS is independent of C2PA. Its current selector carrier, use of the
 `c2pa-text` library, native envelope handling, and registry recovery do not
 establish C2PA conformance, a Content Credential, JUMBF output, a COSE claim
-signature, SynthID interoperability, or conformance with another AI-
-watermarking system.
+signature, SynthID interoperability, or conformance with another AI-watermarking 
+system.
 
 The audited reference implementation is limited to manifest creation, signing,
 compression, carrier embedding, verification, and registry recovery. It is a
