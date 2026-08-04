@@ -169,10 +169,9 @@ envelope, selector-carrier, registry, cryptographic, or production-trust
 contract. They are bounded evidence about the Proposal 007 marker parser and
 tested clipboard/rendering paths.
 
-### 8.1 Proposed testing-tool architecture — ADR 2
+### 8.1 Proposed testing-tool architecture
 
-ADR 2 is a proposed, tool-only marker/header design record. It uses an AI-only
-model, a document-scoped base-5 total-count header, and an approved
+Uses an AI-only model, a document-scoped base-5 total-count header, and an approved
 U+2060–U+2064 library. Human spans and per-span ordinal or total-count fields
 are excluded. The resulting header can support count-level anomaly reporting,
 but cannot locate an ordinal gap or preserve the former human-marker
