@@ -150,15 +150,16 @@ reference-implementation changes.
 
 ## 7. Documentation and review entry points
 
-- [`public-repo/README.md`](README.md) gives the concise public overview.
-- [`SPEC.md`](../SPEC.md) owns the normative envelope, timestamp, text-binding,
-  validation, carrier-routing, registry-response, and confidence contract.
-- [`ARCHITECTURE.md`](../ARCHITECTURE.md) explains component and failure
-  boundaries.
-- [`SECURITY_MODEL.md`](../SECURITY_MODEL.md) owns trust limits and production
-  exclusions.
-- [`IMPLEMENTATION_STATUS.md`](../IMPLEMENTATION_STATUS.md) records the audit
-  evidence and follow-ups.
+- https://github.com/systemacticco-rgb/linguistic-provenance-schema/blob/main/README.md
+gives the concise public overview.
+- https://github.com/systemacticco-rgb/lps-reference-implementation/blob/main/SPEC.md owns
+the normative envelope, timestamp, text-binding, validation, carrier-routing, registry-response,
+and confidence contract.
+- https://github.com/systemacticco-rgb/lps-reference-implementation/blob/main/DIAGRAMS.md
+explains component and failure
+boundaries.
+- https://github.com/systemacticco-rgb/lps-reference-implementation/blob/main/SECURITY_MODEL.md owns trust limits and production exclusions.
+- https://github.com/systemacticco-rgb/lps-reference-implementation/blob/main/IMPLEMENTATION_STATUS.md records the audit evidence and follow-ups.
 
 ## 8. Separate Proposal 007 testing-tool evidence
 
