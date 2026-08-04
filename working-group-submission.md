@@ -239,7 +239,7 @@ this Proposal 007 marker tool.
 The observations are deliberately narrow. Firefox/Linux results do not prove
 universal browser, operating-system, editor, clipboard, rendering, or
 provider compatibility. Rendering is application-specific: LibreOffice on
-Linux showed no glyphs; Linux VS Code showed yellow outlined squares in code
+Linux showed glyphs; Linux VS Code showed yellow outlined squares in code
 files only; Windows VS Code showed rectangles; Windows browser testing showed
 no visual glyphs; and Windows OneNote rendered `ƒ{}`. Rendering alone is a
 usability/disclosure concern, not evidence of marker corruption.
@@ -247,9 +247,9 @@ usability/disclosure concern, not evidence of marker corruption.
 Open review work remains to identify the source of trailing spaces, repeat
 clipboard paths across browsers, systems, and applications, determine whether
 BiDi highlighting can affect selection boundaries or codepoint order, and
-version-test glyph rendering. ADR 3 does not establish Windows or Linux route
+version-test glyph rendering. Current test does not establish Windows or Linux route
 behavior, external API or LLM transit, sanitizer treatment, accessibility, or
 editor generalization. The shown local-test output identifiers and normalized
-indexes remain separate from ADR 2's proposed detailed error catalog until a
+indexes remain separate from 8.1's proposed detailed error catalog until a
 Proposal 007 catalog reconciliation is approved. All Proposal 007 material
 remains separate from the LPS implementation ADR and current v0.1 contract.
