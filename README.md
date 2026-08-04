@@ -28,7 +28,7 @@ The current envelope includes authenticated `ev: 1` version metadata. Its
 inner `content_signed_at` describes the generating source's content-record
 signing or commitment event; outer `signed_at` describes the LPS complete-
 envelope signing event. The exact field and validation contract is maintained
-in the [technical specification](../SPEC.md).
+in the [technical specification](../SPEC.md) https://github.com/systemacticco-rgb/lps-reference-implementation/blob/main/SPEC.md
 
 LPS binds text by stripping trailing CR, LF, and U+0020, encoding the result as
 UTF-8, and deriving both a SHA-256 hash and byte length from those same bytes.
