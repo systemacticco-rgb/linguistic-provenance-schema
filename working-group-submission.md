@@ -4,7 +4,7 @@
 
 **Author:** Brayan Daniel Rodriguez Lugo
 
-**Contact:** rodriguezlugobrayandaniel@gmail.com
+**Contact:** systemactic.co@gmail.com
 
 ## Working-group submission
 
