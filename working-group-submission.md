@@ -2,7 +2,7 @@
 
 **Status:** v0.1 draft for working-group review
 
-**Author:** Brayan Daniel Rodriguez Lugo
+**Author:** Brayan Rodriguez
 
 **Contact:** systemactic.co@gmail.com
 
